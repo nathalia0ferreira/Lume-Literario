@@ -1,0 +1,24 @@
+<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Lume Literário">
+  <!-- Estrela (sparkle) -->
+  <path d="M60 4 Q61.6 13 68 15 Q61.6 17 60 27 Q58.4 17 52 15 Q58.4 13 60 4 Z" fill="#D0B56D"/>
+  <!-- L esquerdo (serifa) -->
+  <path d="M22 33 H42 V40 H38 V90 H58 V99 H26 V40 H22 Z" fill="#7B011E"/>
+  <!-- L direito (espelhado) -->
+  <path d="M98 33 H78 V40 H82 V90 H62 V99 H94 V40 H98 Z" fill="#7B011E"/>
+  <!-- Livro 1 (vermelho, em pé) -->
+  <rect x="44" y="58" width="12" height="32" rx="1.5" fill="#9a1330" stroke="#2B2B2B" stroke-width="1.6"/>
+  <rect x="47" y="64" width="6" height="3" rx="1" fill="#2B2B2B"/>
+  <!-- Livro 2 (dourado, em pé) -->
+  <rect x="57" y="51" width="12" height="39" rx="1.5" fill="#D0B56D" stroke="#2B2B2B" stroke-width="1.6"/>
+  <rect x="60" y="59" width="6" height="3" rx="1" fill="#2B2B2B"/>
+  <!-- Livro 3 (dourado, inclinado) -->
+  <g transform="rotate(17 77 73)">
+    <rect x="71" y="53" width="12" height="37" rx="1.5" fill="#D0B56D" stroke="#2B2B2B" stroke-width="1.6"/>
+    <rect x="74" y="60" width="6" height="3" rx="1" fill="#2B2B2B"/>
+    <rect x="74" y="80" width="6" height="3" rx="1" fill="#2B2B2B"/>
+  </g>
+  <!-- Pontos dourados na base -->
+  <circle cx="80" cy="94.5" r="1.8" fill="#D0B56D"/>
+  <circle cx="86" cy="94.5" r="1.8" fill="#D0B56D"/>
+  <circle cx="92" cy="94.5" r="1.8" fill="#D0B56D"/>
+</svg>

@@ -1,0 +1,2866 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lume Literário — Sistema de Gestão de Biblioteca</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  </head>
+  <body>
+    <div class="container" id="appRoot" style="display: none">
+      <!-- ===== HEADER ===== -->
+      <header>
+        <div class="header-left">
+          <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()" aria-label="Abrir menu">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          </button>
+          <img class="header-logo" src="assets/Logo lume.png" alt="Logo Lume Literário" width="48" height="48" />
+          <div class="header-title">
+            <h1>Lume <span>Literário</span></h1>
+          </div>
+        </div>
+        <div class="header-right">
+          <div class="db-indicator" aria-live="polite">
+            <div class="db-dot" id="dbDot"></div>
+            <span id="dbStatus">conectando...</span>
+          </div>
+          <div class="user-menu" id="userMenu">
+            <button class="user-menu-btn" onclick="toggleUserMenu()" aria-expanded="false" aria-haspopup="true">
+              <div class="user-avatar" id="userAvatar">A</div>
+              <div class="user-info">
+                <span class="user-name" id="userDisplayName">Admin</span>
+                <span class="user-role" id="userDisplayRole">Administrador</span>
+              </div>
+              <svg
+                class="chevron-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+            <div class="user-dropdown" id="userDropdown" role="menu">
+              <button class="dropdown-item" role="menuitem" onclick="showMeuPerfil()">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+                Meu Perfil
+              </button>
+              <button class="dropdown-item" role="menuitem" onclick="showMeuPerfil('security')">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+                Alterar Senha
+              </button>
+              <!-- "Gerenciar Perfis" saiu do menu do usuário em 16/07/2026
+                   (feedback de design: o menu da conta deve reunir só ações
+                   pessoais). Virou item de navegação — ver #nav-perfis no
+                   grupo ADMINISTRAÇÃO da sidebar, abaixo. -->
+              <div class="dropdown-divider" role="separator"></div>
+              <button class="dropdown-item dropdown-item-danger" role="menuitem" onclick="logout()">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                  <polyline points="16 17 21 12 16 7" />
+                  <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+                Sair
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- ===== BODY: SIDEBAR + MAIN ===== -->
+      <div class="app-body">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar" aria-label="Navegação principal">
+          <nav>
+            <div class="nav-group">
+              <span class="nav-group-label">GERAL</span>
+              <button
+                class="nav-item active"
+                id="nav-dashboard"
+                onclick="showSection('dashboard', this)"
+                aria-current="page"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                  <polyline points="9,22 9,12 15,12 15,22" />
+                </svg>
+                Painel
+              </button>
+            </div>
+            <div class="nav-group">
+              <span class="nav-group-label">OPERAÇÃO</span>
+              <button class="nav-item" id="nav-livros" onclick="showSection('livros', this)">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                </svg>
+                Livros
+              </button>
+              <button class="nav-item" id="nav-exemplares" onclick="showSection('exemplares', this)">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"
+                  />
+                  <polyline points="3.27,6.96 12,12.01 20.73,6.96" />
+                  <line x1="12" y1="22.08" x2="12" y2="12" />
+                </svg>
+                Exemplares
+              </button>
+              <button class="nav-item" id="nav-emprestimos" onclick="showSection('emprestimos', this)">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <polyline points="23 4 23 10 17 10" />
+                  <polyline points="1 20 1 14 7 14" />
+                  <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+                </svg>
+                Empréstimos
+              </button>
+              <button class="nav-item" id="nav-reservas" onclick="showSection('reservas', this)">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                </svg>
+                Reservas
+              </button>
+            </div>
+            <div class="nav-group">
+              <span class="nav-group-label">ADMINISTRAÇÃO</span>
+              <button class="nav-item" id="nav-usuarios" onclick="showSection('usuarios', this)">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+                Leitores
+              </button>
+              <button class="nav-item" id="nav-multas" onclick="showSection('multas', this)">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <line x1="12" y1="1" x2="12" y2="23" />
+                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                </svg>
+                Multas
+              </button>
+              <button class="nav-item" id="nav-auditoria" onclick="showSection('auditoria', this)">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
+                Auditoria
+              </button>
+              <!-- Só aparece para admin (ver iniciarApp em app.js) — reorganização
+                   de 16/07/2026: "Gerenciar Perfis" saiu do menu do usuário e
+                   virou uma página própria na navegação principal. -->
+              <button class="nav-item" id="nav-perfis" onclick="showSection('perfis', this)" style="display: none">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+                Perfis e Permissões
+              </button>
+            </div>
+          </nav>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main role="main" class="main-content">
+          <!-- DASHBOARD -->
+          <section id="dashboard" class="section active" role="tabpanel">
+            <div class="page-header">
+              <div>
+                <h2>Painel Geral</h2>
+                <p class="page-subtitle" id="dashboardGreeting">Aqui está o resumo da situação atual da biblioteca.</p>
+              </div>
+            </div>
+
+            <!-- Banner de atrasos (visível apenas quando há atrasos) -->
+            <div class="overdue-banner" id="overduesBanner" style="display: none">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                aria-hidden="true"
+              >
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                <line x1="12" y1="9" x2="12" y2="13" />
+                <line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+              <strong id="overduesCount">0</strong> empréstimo(s) em atraso.
+            </div>
+
+            <!-- KPIs -->
+            <div class="stats" id="statsContainer" aria-live="polite"><div class="loading">Carregando...</div></div>
+
+            <!-- Gráficos -->
+            <div class="charts-row" id="chartsRow" style="display: none">
+              <div class="chart-card">
+                <h3 class="chart-title">Disponibilidade do Acervo</h3>
+                <div class="chart-wrap-donut"><canvas id="chartDisponibilidade"></canvas></div>
+                <div class="chart-legend" id="legendDisponibilidade"></div>
+              </div>
+              <div class="chart-card">
+                <h3 class="chart-title">Livros por Categoria</h3>
+                <div class="chart-wrap-bar"><canvas id="chartCategorias"></canvas></div>
+              </div>
+            </div>
+
+            <!-- Tabela de atrasos -->
+            <div class="dashboard-block">
+              <h3 class="block-title">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="8" x2="12" y2="12" />
+                  <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+                Empréstimos em Atraso
+              </h3>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th scope="col">Livro</th>
+                      <th scope="col">Leitor</th>
+                      <th scope="col">Situação</th>
+                      <th scope="col">Dias</th>
+                      <th scope="col">Multa</th>
+                      <th scope="col">Ação</th>
+                    </tr>
+                  </thead>
+                  <tbody id="atrasosTable">
+                    <tr>
+                      <td colspan="6" class="loading">Carregando...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <!-- LEITORES -->
+          <section id="usuarios" class="section" role="tabpanel">
+            <div class="page-header">
+              <div>
+                <h2>Leitores</h2>
+                <p class="page-subtitle">Gerencie todos os leitores cadastrados na biblioteca.</p>
+              </div>
+              <button class="btn btn-primary" id="btnNovoUsuario" onclick="abrirModalNovoUsuario()">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                  style="width: 16px; height: 16px"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                Novo Leitor
+              </button>
+            </div>
+            <div id="usuarioAlert" aria-live="polite"></div>
+
+            <!-- KPIs -->
+            <div class="usuarios-kpis" id="usuariosKpis">
+              <div class="usuarios-kpi-card">
+                <span class="usuarios-kpi-num" id="uKpiTotal">—</span>
+                <span class="usuarios-kpi-label">Leitores</span>
+              </div>
+              <div class="usuarios-kpi-card usuarios-kpi-verde">
+                <span class="usuarios-kpi-num" id="uKpiAtivos">—</span>
+                <span class="usuarios-kpi-label">Ativos</span>
+              </div>
+              <div class="usuarios-kpi-card">
+                <span class="usuarios-kpi-num" id="uKpiComEmprestimos">—</span>
+                <span class="usuarios-kpi-label">Com empréstimos ativos</span>
+              </div>
+              <div class="usuarios-kpi-card usuarios-kpi-muted">
+                <span class="usuarios-kpi-num" id="uKpiComMultas">—</span>
+                <span class="usuarios-kpi-label">Com multas pendentes</span>
+              </div>
+            </div>
+
+            <!-- Busca + Filtros -->
+            <div class="search-row usuarios-search-row">
+              <input
+                type="search"
+                id="usuariosSearch"
+                placeholder="Buscar por nome, CPF, email ou telefone..."
+                oninput="filterTable('usuarios')"
+                aria-label="Buscar leitor"
+              />
+              <div class="filter-group">
+                <select
+                  id="filtroStatusUsuarios"
+                  onchange="
+                    pageState.usuarios = 1;
+                    renderUsuarios();
+                  "
+                >
+                  <option value="">Todos os status</option>
+                  <option value="ativo">Ativos</option>
+                  <option value="inativo">Inativos</option>
+                </select>
+                <select
+                  id="filtroOrdemUsuarios"
+                  onchange="
+                    pageState.usuarios = 1;
+                    renderUsuarios();
+                  "
+                >
+                  <option value="nome">Nome A–Z</option>
+                  <option value="recentes">Mais recentes</option>
+                </select>
+              </div>
+            </div>
+            <p class="section-hint" id="usuariosHint" aria-live="polite"></p>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">Nome</th>
+                    <th scope="col">Contato</th>
+                    <th scope="col">CPF</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="usuariosTable">
+                  <tr>
+                    <td colspan="5" class="loading">Carregando...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div id="usuariosPagination"></div>
+          </section>
+
+          <!-- LIVROS -->
+          <section id="livros" class="section" role="tabpanel">
+            <div class="page-header">
+              <div>
+                <h2>Livros</h2>
+                <p class="page-subtitle">Gerencie o acervo bibliográfico da biblioteca.</p>
+              </div>
+              <button class="btn btn-primary" id="btnNovoLivro" onclick="abrirModalNovoLivro()">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                  style="width: 16px; height: 16px"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                Novo Livro
+              </button>
+            </div>
+            <div id="livroAlert" aria-live="polite"></div>
+
+            <div class="livros-toolbar">
+              <div class="search-row livros-search-row">
+                <input
+                  type="search"
+                  id="livrosSearch"
+                  placeholder="Buscar por título, autor, ISBN ou editora..."
+                  oninput="filterTable('livros')"
+                  aria-label="Buscar livro"
+                />
+              </div>
+              <div class="livros-filters">
+                <!-- Custom select — Categoria -->
+                <div class="csel-wrap" id="cselLivroCategoria">
+                  <button
+                    type="button"
+                    class="csel-trigger"
+                    onclick="cselToggle('cselLivroCategoria')"
+                    aria-haspopup="listbox"
+                    aria-expanded="false"
+                    aria-label="Filtrar por categoria"
+                  >
+                    <span class="csel-label">Categoria</span>
+                    <svg
+                      class="csel-arrow"
+                      viewBox="0 0 12 8"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <polyline points="1,1 6,7 11,1" />
+                    </svg>
+                  </button>
+                  <div class="csel-panel" role="listbox" style="display: none"></div>
+                  <select id="livroFiltroCategoria" style="display: none" aria-hidden="true" tabindex="-1">
+                    <option value="">Categoria</option>
+                  </select>
+                </div>
+                <!-- Custom select — Editora -->
+                <div class="csel-wrap" id="cselLivroEditora">
+                  <button
+                    type="button"
+                    class="csel-trigger"
+                    onclick="cselToggle('cselLivroEditora')"
+                    aria-haspopup="listbox"
+                    aria-expanded="false"
+                    aria-label="Filtrar por editora"
+                  >
+                    <span class="csel-label">Editora</span>
+                    <svg
+                      class="csel-arrow"
+                      viewBox="0 0 12 8"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <polyline points="1,1 6,7 11,1" />
+                    </svg>
+                  </button>
+                  <div class="csel-panel" role="listbox" style="display: none"></div>
+                  <select id="livroFiltroEditora" style="display: none" aria-hidden="true" tabindex="-1">
+                    <option value="">Editora</option>
+                  </select>
+                </div>
+                <!-- Custom select — Disponibilidade -->
+                <div class="csel-wrap" id="cselLivroDisp">
+                  <button
+                    type="button"
+                    class="csel-trigger"
+                    onclick="cselToggle('cselLivroDisp')"
+                    aria-haspopup="listbox"
+                    aria-expanded="false"
+                    aria-label="Filtrar por disponibilidade"
+                  >
+                    <span class="csel-label">Disponibilidade</span>
+                    <svg
+                      class="csel-arrow"
+                      viewBox="0 0 12 8"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <polyline points="1,1 6,7 11,1" />
+                    </svg>
+                  </button>
+                  <div class="csel-panel" role="listbox" style="display: none"></div>
+                  <select id="livroFiltroDisponibilidade" style="display: none" aria-hidden="true" tabindex="-1">
+                    <option value="">Disponibilidade</option>
+                    <option value="disponiveis">Com exemplares disponíveis</option>
+                    <option value="sem_exemplares">Sem exemplares</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">Livro</th>
+                    <th scope="col">Categoria</th>
+                    <th scope="col">Editora</th>
+                    <th scope="col">Disponibilidade</th>
+                    <th scope="col">Reservas</th>
+                    <th scope="col">Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="livrosTable">
+                  <tr>
+                    <td colspan="6" class="loading">Carregando...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div id="livrosPagination"></div>
+          </section>
+
+          <!-- EXEMPLARES -->
+          <!-- Reforma de 16/07/2026 (feedback de design): formulário inline virou
+               modal (mesmo padrão de Livros); UUID some da interface (código
+               patrimonial passa a ser o identificador visual, gerado
+               automaticamente pelo banco); status colorido + menu de ações no
+               lugar do select inline; filtros de status/livro; linha clicável
+               abre a tela de detalhe do exemplar (abrirDetalheExemplarPagina). -->
+          <section id="exemplares" class="section" role="tabpanel">
+            <div class="page-header">
+              <div>
+                <h2>Exemplares</h2>
+                <p class="page-subtitle">Gerencie as cópias físicas do acervo.</p>
+              </div>
+              <button class="btn btn-primary" id="btnNovoExemplar" onclick="abrirModalNovoExemplar()">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                  style="width: 16px; height: 16px"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                Novo Exemplar
+              </button>
+            </div>
+            <div id="exemplarAlert" aria-live="polite"></div>
+
+            <div class="livros-toolbar">
+              <div class="search-row livros-search-row">
+                <input
+                  type="search"
+                  id="exemplaresSearch"
+                  placeholder="Buscar por código, livro ou leitor..."
+                  oninput="filterTable('exemplares')"
+                  aria-label="Buscar exemplar"
+                />
+                <span class="search-hint" id="exemplaresHint" aria-live="polite"></span>
+              </div>
+              <div class="livros-filters">
+                <select
+                  id="exemplarFiltroStatus"
+                  aria-label="Filtrar por status"
+                  onchange="
+                    pageState.exemplares = 1;
+                    renderExemplares();
+                  "
+                >
+                  <option value="">Todos os status</option>
+                  <option value="Disponivel">Disponível</option>
+                  <option value="Emprestado">Emprestado</option>
+                  <option value="Manutencao">Manutenção</option>
+                  <option value="Baixado">Baixado</option>
+                </select>
+                <select
+                  id="exemplarFiltroLivro"
+                  aria-label="Filtrar por livro"
+                  onchange="
+                    pageState.exemplares = 1;
+                    renderExemplares();
+                  "
+                >
+                  <option value="">Todos os livros</option>
+                </select>
+                <!-- Filtro por leitor (17/07/2026, feedback de design: "quais
+                     livros a Carla está com") — só lista quem tem empréstimo
+                     em aberto agora (ver reloadExemplarSelects). -->
+                <select
+                  id="exemplarFiltroLeitor"
+                  aria-label="Filtrar por leitor"
+                  onchange="
+                    pageState.exemplares = 1;
+                    renderExemplares();
+                  "
+                >
+                  <option value="">Todos os leitores</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">Código</th>
+                    <th scope="col">Livro</th>
+                    <th scope="col">Situação</th>
+                    <th scope="col">Detalhe</th>
+                    <th scope="col">Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="exemplaresTable">
+                  <tr>
+                    <td colspan="5" class="loading">Carregando...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div id="exemplaresPagination"></div>
+          </section>
+
+          <!-- EMPRÉSTIMOS -->
+          <section id="emprestimos" class="section" role="tabpanel">
+            <div class="page-header">
+              <div>
+                <h2>Empréstimos</h2>
+                <p class="page-subtitle">Gerencie todos os empréstimos da biblioteca.</p>
+              </div>
+              <button class="btn btn-primary" id="btnNovoEmprestimo" onclick="abrirModalNovoEmprestimo()">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                  style="width: 16px; height: 16px"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                Novo Empréstimo
+              </button>
+            </div>
+            <div id="emprestimoAlert" aria-live="polite"></div>
+
+            <div class="livros-toolbar">
+              <div class="search-row livros-search-row">
+                <input
+                  type="search"
+                  id="emprestimosSearch"
+                  placeholder="Buscar por leitor, livro ou código do exemplar..."
+                  oninput="filterTable('emprestimos')"
+                  aria-label="Buscar empréstimo"
+                />
+                <span class="search-hint" id="emprestimosHint" aria-live="polite"></span>
+              </div>
+              <div class="livros-filters">
+                <select
+                  id="emprestimoFiltroStatus"
+                  aria-label="Filtrar por status"
+                  onchange="
+                    pageState.emprestimos = 1;
+                    renderEmprestimos();
+                  "
+                >
+                  <option value="">Todos os status</option>
+                  <option value="Ativo">Em andamento</option>
+                  <option value="Atrasado">Atrasado</option>
+                  <option value="Devolvido">Devolvido</option>
+                </select>
+                <select
+                  id="emprestimoFiltroLeitor"
+                  aria-label="Filtrar por leitor"
+                  onchange="
+                    pageState.emprestimos = 1;
+                    renderEmprestimos();
+                  "
+                >
+                  <option value="">Todos os leitores</option>
+                </select>
+                <select
+                  id="emprestimoFiltroLivro"
+                  aria-label="Filtrar por livro"
+                  onchange="
+                    pageState.emprestimos = 1;
+                    renderEmprestimos();
+                  "
+                >
+                  <option value="">Todos os livros</option>
+                </select>
+                <select
+                  id="emprestimoFiltroVencimento"
+                  aria-label="Filtrar por vencimento"
+                  onchange="
+                    pageState.emprestimos = 1;
+                    renderEmprestimos();
+                  "
+                >
+                  <option value="">Todos os vencimentos</option>
+                  <option value="hoje">Vence hoje</option>
+                  <option value="semana">Vence esta semana</option>
+                  <option value="atrasados">Atrasados</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">Leitor</th>
+                    <th scope="col">Livro / Exemplar</th>
+                    <th scope="col">Retirada</th>
+                    <th scope="col">Prazo</th>
+                    <th scope="col">Situação</th>
+                    <th scope="col">Detalhe</th>
+                    <th scope="col">Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="emprestimosTable">
+                  <tr>
+                    <td colspan="7" class="loading">Carregando...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div id="emprestimosPagination"></div>
+          </section>
+
+          <!-- RESERVAS -->
+          <section id="reservas" class="section" role="tabpanel">
+            <div class="page-header"><h2>Reservas</h2></div>
+            <div id="reservaAlert" aria-live="polite"></div>
+
+            <!-- KPIs (17/07/2026, feedback de design) — reaproveita o mesmo
+                 componente visual de cartões usado nos KPIs de Leitores.
+                 18/07/2026: os dois primeiros cartões viraram botões
+                 clicáveis que filtram a tabela por status (ver
+                 filtrarReservasPorStatus em js/ui.js); "Livro mais
+                 reservado" ganhou um segundo cartão. -->
+            <div class="usuarios-kpis" id="reservasKpis">
+              <button
+                type="button"
+                class="usuarios-kpi-card usuarios-kpi-clicavel"
+                id="rKpiAtivasCard"
+                onclick="filtrarReservasPorStatus('Ativa')"
+              >
+                <span class="usuarios-kpi-num" id="rKpiAtivas">—</span>
+                <span class="usuarios-kpi-label">Reservas ativas</span>
+              </button>
+              <button
+                type="button"
+                class="usuarios-kpi-card usuarios-kpi-verde usuarios-kpi-clicavel"
+                id="rKpiAtendidasCard"
+                onclick="filtrarReservasPorStatus('Atendida')"
+              >
+                <span class="usuarios-kpi-num" id="rKpiAtendidas">—</span>
+                <span class="usuarios-kpi-label">Atendidas</span>
+              </button>
+              <div class="usuarios-kpi-card usuarios-kpi-muted">
+                <span class="usuarios-kpi-num usuarios-kpi-num-texto" id="rKpiMaisReservadoTitulo">—</span>
+                <span class="usuarios-kpi-subtexto" id="rKpiMaisReservadoContagem"></span>
+                <span class="usuarios-kpi-label">Livro mais reservado</span>
+              </div>
+            </div>
+
+            <div class="form-card">
+              <h3>Nova Reserva</h3>
+              <div class="form-grid">
+                <!-- Livro antes de Leitor (17/07/2026, feedback de design):
+                     o bibliotecário normalmente recebe o pedido pelo título
+                     do livro ("quero reservar Código Limpo"), não pelo leitor
+                     — inverter a ordem segue o fluxo real de atendimento. -->
+                <div class="form-group">
+                  <label for="reservaLivro">Livro *</label
+                  ><select id="reservaLivro" onchange="aoEscolherLivroReserva()">
+                    <option value="">Selecione...</option>
+                  </select>
+                </div>
+                <div
+                  class="emprestimo-resumo-livro"
+                  id="reservaResumoLivro"
+                  style="display: none; grid-column: 1 / -1"
+                ></div>
+                <div class="form-group">
+                  <label for="reservaUsuario">Leitor *</label
+                  ><select id="reservaUsuario">
+                    <option value="">Selecione...</option>
+                  </select>
+                  <div class="leitor-fixo" id="reservaUsuarioFixo" style="display: none">
+                    <span class="leitor-fixo-nome" id="reservaUsuarioFixoNome"></span>
+                    <button type="button" class="leitor-fixo-alterar" onclick="alterarLeitorFixo('reserva')">
+                      Alterar
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <button class="btn btn-primary" id="btnCadReserva" onclick="createReserva()">Criar Reserva</button>
+            </div>
+            <h3>Lista de Reservas</h3>
+            <div class="search-row">
+              <input
+                type="search"
+                id="reservasSearch"
+                placeholder="Buscar por livro ou leitor..."
+                oninput="filterTable('reservas')"
+                aria-label="Buscar reserva"
+              />
+              <span class="search-hint" id="reservasHint" aria-live="polite"></span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">Livro</th>
+                    <th scope="col">Leitor</th>
+                    <th scope="col">Fila</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Reserva em</th>
+                    <th scope="col">Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="reservasTable">
+                  <tr>
+                    <td colspan="6" class="loading">Carregando...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div id="reservasPagination"></div>
+          </section>
+
+          <!-- MULTAS -->
+          <section id="multas" class="section" role="tabpanel">
+            <div class="page-header"><h2>Multas</h2></div>
+            <div id="multaAlert" aria-live="polite"></div>
+            <div class="search-row">
+              <input
+                type="search"
+                id="multasSearch"
+                placeholder="Buscar em todos os registros..."
+                oninput="filterTable('multas')"
+                aria-label="Buscar multa"
+              />
+              <span class="search-hint" id="multasHint" aria-live="polite"></span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Leitor</th>
+                    <th scope="col">Livro</th>
+                    <th scope="col">Dias Atraso</th>
+                    <th scope="col">Valor/Dia</th>
+                    <th scope="col">Total</th>
+                    <th scope="col">Situação</th>
+                    <th scope="col">Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="multasTable">
+                  <tr>
+                    <td colspan="8" class="loading">Carregando...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div id="multasPagination"></div>
+          </section>
+
+          <!-- AUDITORIA (RBAC — oculta para o papel 'consulta') -->
+          <section id="auditoria" class="section" role="tabpanel">
+            <div class="page-header">
+              <div>
+                <h2>Auditoria</h2>
+                <p class="page-subtitle">
+                  Histórico completo de ações realizadas no sistema, com quem, quando e o quê.
+                </p>
+              </div>
+            </div>
+            <div id="auditoriaAlert" aria-live="polite"></div>
+
+            <div class="livros-toolbar">
+              <div class="search-row livros-search-row">
+                <input
+                  type="search"
+                  id="auditoriaSearch"
+                  placeholder="Buscar por usuário, ação, entidade ou código..."
+                  oninput="filterTable('auditoria')"
+                  aria-label="Buscar na auditoria"
+                />
+                <span class="search-hint" id="auditoriaHint" aria-live="polite"></span>
+              </div>
+              <div class="livros-filters">
+                <select
+                  id="auditoriaFiltroPeriodo"
+                  aria-label="Filtrar por período"
+                  onchange="onAuditoriaPeriodoChange()"
+                >
+                  <option value="">Qualquer período</option>
+                  <option value="hoje">Hoje</option>
+                  <option value="semana">Esta semana</option>
+                  <option value="mes">Este mês</option>
+                  <option value="personalizado">Personalizado</option>
+                </select>
+                <input
+                  type="date"
+                  id="auditoriaPeriodoDe"
+                  aria-label="Período — de"
+                  style="display: none"
+                  onchange="
+                    pageState.auditoria = 1;
+                    renderAuditoria();
+                  "
+                />
+                <input
+                  type="date"
+                  id="auditoriaPeriodoAte"
+                  aria-label="Período — até"
+                  style="display: none"
+                  onchange="
+                    pageState.auditoria = 1;
+                    renderAuditoria();
+                  "
+                />
+                <select
+                  id="auditoriaFiltroUsuario"
+                  aria-label="Filtrar por usuário"
+                  onchange="
+                    pageState.auditoria = 1;
+                    renderAuditoria();
+                  "
+                >
+                  <option value="">Todos os usuários</option>
+                </select>
+                <select
+                  id="auditoriaFiltroAcao"
+                  aria-label="Filtrar por ação"
+                  onchange="
+                    pageState.auditoria = 1;
+                    renderAuditoria();
+                  "
+                >
+                  <option value="">Todas as ações</option>
+                </select>
+                <select
+                  id="auditoriaFiltroEntidade"
+                  aria-label="Filtrar por entidade"
+                  onchange="
+                    pageState.auditoria = 1;
+                    renderAuditoria();
+                  "
+                >
+                  <option value="">Todas as entidades</option>
+                  <option value="usuario">Leitor</option>
+                  <option value="livro">Livro</option>
+                  <option value="exemplar">Exemplar</option>
+                  <option value="emprestimo">Empréstimo</option>
+                  <option value="reserva">Reserva</option>
+                  <option value="multa">Multa</option>
+                  <option value="app_perfil">Perfil de acesso</option>
+                  <option value="categoria">Categoria</option>
+                  <option value="editora">Editora</option>
+                  <option value="autor">Autor</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">Data/Hora</th>
+                    <th scope="col">Usuário</th>
+                    <th scope="col">Ação</th>
+                    <th scope="col">Entidade</th>
+                    <th scope="col">Código</th>
+                  </tr>
+                </thead>
+                <tbody id="auditoriaTable">
+                  <tr>
+                    <td colspan="5" class="loading">Carregando...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div id="auditoriaPagination"></div>
+          </section>
+
+          <!-- PERFIS (RBAC — somente admin) -->
+          <!-- MEU PERFIL — acesso pelo menu do usuário, não pelo sidebar -->
+          <section id="meuPerfil" class="section" role="tabpanel">
+            <div class="page-header">
+              <div>
+                <h2>Meu Perfil</h2>
+                <p class="page-subtitle">Gerencie suas informações pessoais e de acesso.</p>
+              </div>
+            </div>
+            <div id="meuPerfilAlert" aria-live="polite"></div>
+
+            <div class="perfil-layout">
+              <!-- Coluna principal -->
+              <div class="perfil-main">
+                <!-- Informações Pessoais -->
+                <div class="form-card" id="cardInfoPessoal">
+                  <h3>Informações Pessoais</h3>
+                  <div class="perfil-avatar-row">
+                    <div class="perfil-avatar-large" id="meuPerfilAvatar">A</div>
+                    <div>
+                      <p style="font-weight: 600; color: var(--text); margin-bottom: 4px">Foto de perfil</p>
+                      <p class="text-muted" style="font-size: 13px">Upload de foto estará disponível em breve.</p>
+                    </div>
+                  </div>
+                  <div class="form-grid">
+                    <div class="form-group">
+                      <label for="meuPerfilNome">Nome</label>
+                      <input type="text" id="meuPerfilNome" autocomplete="name" placeholder="Seu nome completo" />
+                    </div>
+                    <div class="form-group">
+                      <label>Email</label>
+                      <input type="email" id="meuPerfilEmail" disabled class="input-readonly" autocomplete="off" />
+                      <small>Vinculado à conta de acesso — não pode ser alterado.</small>
+                    </div>
+                    <div class="form-group">
+                      <label for="meuPerfilTelefone">Telefone</label>
+                      <input type="text" id="meuPerfilTelefone" autocomplete="tel" placeholder="(71) 99999-9999" />
+                    </div>
+                    <div class="form-group">
+                      <label>CPF</label>
+                      <input type="text" id="meuPerfilCPF" disabled class="input-readonly" autocomplete="off" />
+                      <small>Registrado no sistema — não pode ser alterado.</small>
+                    </div>
+                  </div>
+                  <button class="btn btn-primary" id="btnSalvarMeuPerfil" onclick="salvarMeuPerfil()">
+                    Salvar Alterações
+                  </button>
+                </div>
+
+                <!-- Segurança -->
+                <div class="form-card" id="cardSeguranca">
+                  <h3>Segurança</h3>
+                  <div id="meuPerfilSenhaAlert" aria-live="polite"></div>
+                  <div class="form-grid" style="grid-template-columns: 1fr">
+                    <div class="form-group">
+                      <label for="senhaAtual">Senha Atual</label>
+                      <input type="password" id="senhaAtual" autocomplete="current-password" />
+                    </div>
+                    <div class="form-group">
+                      <label for="senhaNova">Nova Senha</label>
+                      <input type="password" id="senhaNova" autocomplete="new-password" />
+                      <small>Mínimo de 6 caracteres.</small>
+                    </div>
+                    <div class="form-group">
+                      <label for="senhaConfirmar">Confirmar Nova Senha</label>
+                      <input type="password" id="senhaConfirmar" autocomplete="new-password" />
+                    </div>
+                  </div>
+                  <button class="btn btn-primary" id="btnAlterarSenha" onclick="alterarSenha()">Alterar Senha</button>
+                </div>
+              </div>
+              <!-- /perfil-main -->
+
+              <!-- Coluna lateral -->
+              <div class="perfil-aside">
+                <!-- Informações da Conta -->
+                <div class="form-card">
+                  <h3>Informações da Conta</h3>
+                  <dl class="perfil-info-list">
+                    <div class="perfil-info-item">
+                      <dt>Perfil de acesso</dt>
+                      <dd id="meuPerfilPapelDisplay">—</dd>
+                    </div>
+                    <div class="perfil-info-item">
+                      <dt>Status</dt>
+                      <dd id="meuPerfilStatusDisplay">—</dd>
+                    </div>
+                    <div class="perfil-info-item">
+                      <dt>Conta criada em</dt>
+                      <dd id="meuPerfilCriadoEm">—</dd>
+                    </div>
+                  </dl>
+                </div>
+
+                <!-- Preferências (futuro) -->
+                <div class="form-card">
+                  <h3>Preferências</h3>
+                  <p class="text-muted" style="font-size: 13px; margin-bottom: 18px">
+                    Personalização estará disponível em breve.
+                  </p>
+                  <div class="form-group" style="margin-bottom: 16px">
+                    <label style="font-size: 13px; font-weight: 600; letter-spacing: 0; text-transform: none"
+                      >Tema</label
+                    >
+                    <div class="radio-group">
+                      <label class="radio-option"
+                        ><input type="radio" name="tema" value="claro" checked disabled /><span>Claro</span></label
+                      >
+                      <label class="radio-option"
+                        ><input type="radio" name="tema" value="escuro" disabled /><span>Escuro</span></label
+                      >
+                    </div>
+                  </div>
+                  <div class="form-group" style="margin-bottom: 16px">
+                    <label style="font-size: 13px; font-weight: 600; letter-spacing: 0; text-transform: none"
+                      >Idioma</label
+                    >
+                    <select disabled style="margin-top: 8px">
+                      <option>Português (Brasil)</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label style="font-size: 13px; font-weight: 600; letter-spacing: 0; text-transform: none"
+                      >Notificações</label
+                    >
+                    <div class="checkbox-group">
+                      <label class="checkbox-option"
+                        ><input type="checkbox" checked disabled /><span>Email</span></label
+                      >
+                      <label class="checkbox-option"
+                        ><input type="checkbox" checked disabled /><span>Sistema</span></label
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- /perfil-aside -->
+            </div>
+            <!-- /perfil-layout -->
+          </section>
+
+          <section id="perfis" class="section" role="tabpanel">
+            <!-- Redesenho de 18/07/2026 (feedback de design): título/rótulos
+                 menos técnicos, KPIs clicáveis (mesmo padrão de Reservas,
+                 Achado 34), descrição do papel no formulário, tabela enxuta
+                 (Email/Papel/Status/Último acesso) com linha clicável — o
+                 detalhe completo (Criado em/Criado por) e as ações (Alterar
+                 papel/Copiar e-mail/Reenviar convite/Remover) vivem no novo
+                 modalDetalhePerfil, não numa coluna de tabela nem num menu
+                 "⋮" — mesma filosofia lista-mínima/detalhe-completo já
+                 aplicada em Exemplares (Achado 33) e Reservas (Achado 34). -->
+            <div class="page-header">
+              <div>
+                <h2>Perfis e Permissões</h2>
+                <p class="page-subtitle">Gerencie os acessos ao sistema.</p>
+              </div>
+            </div>
+            <div id="perfilAlert" aria-live="polite"></div>
+
+            <div class="usuarios-kpis" id="perfisKpis">
+              <button
+                type="button"
+                class="usuarios-kpi-card usuarios-kpi-clicavel"
+                id="pfKpiAdminCard"
+                onclick="filtrarPerfisPorTipo('admin')"
+              >
+                <span class="usuarios-kpi-num" id="pfKpiAdmin">—</span>
+                <span class="usuarios-kpi-label">Administradores</span>
+              </button>
+              <button
+                type="button"
+                class="usuarios-kpi-card usuarios-kpi-clicavel"
+                id="pfKpiBiblioCard"
+                onclick="filtrarPerfisPorTipo('bibliotecario')"
+              >
+                <span class="usuarios-kpi-num" id="pfKpiBiblio">—</span>
+                <span class="usuarios-kpi-label">Bibliotecários</span>
+              </button>
+              <button
+                type="button"
+                class="usuarios-kpi-card usuarios-kpi-clicavel"
+                id="pfKpiConsultaCard"
+                onclick="filtrarPerfisPorTipo('consulta')"
+              >
+                <span class="usuarios-kpi-num" id="pfKpiConsulta">—</span>
+                <span class="usuarios-kpi-label">Consulta</span>
+              </button>
+              <button
+                type="button"
+                class="usuarios-kpi-card usuarios-kpi-muted usuarios-kpi-clicavel"
+                id="pfKpiPendentesCard"
+                onclick="filtrarPerfisPorTipo('pendente')"
+              >
+                <span class="usuarios-kpi-num" id="pfKpiPendentes">—</span>
+                <span class="usuarios-kpi-label">Convites pendentes</span>
+              </button>
+            </div>
+
+            <div class="form-card">
+              <h3>Conceder acesso</h3>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="perfilEmail">E-mail do usuário *</label>
+                  <input type="email" id="perfilEmail" autocomplete="off" placeholder="pessoa@lume.local" />
+                  <small>Se ainda não existir perfil, ele é criado; o vínculo é feito no próximo login.</small>
+                </div>
+                <div class="form-group">
+                  <label for="perfilPapel">Papel *</label>
+                  <select id="perfilPapel" onchange="aoEscolherPapelPerfil()">
+                    <option value="consulta">Consulta</option>
+                    <option value="bibliotecario">Bibliotecário</option>
+                    <option value="admin">Administrador</option>
+                  </select>
+                  <small id="perfilPapelDescricao"></small>
+                </div>
+              </div>
+              <button class="btn btn-primary" id="btnDefinirPapel" onclick="definirPapel()">Conceder acesso</button>
+            </div>
+            <h3>Perfis Cadastrados</h3>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">Email</th>
+                    <th scope="col">Papel</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Último acesso</th>
+                  </tr>
+                </thead>
+                <tbody id="perfisTable">
+                  <tr>
+                    <td colspan="4" class="loading">Carregando...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </main>
+      </div>
+      <!-- /.app-body -->
+    </div>
+    <!-- /#appRoot -->
+
+    <!-- MODAL — Novo Leitor -->
+    <div
+      id="modalNovoUsuario"
+      class="modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modalNovoUsuarioTitulo"
+    >
+      <div class="modal-box">
+        <h3 id="modalNovoUsuarioTitulo">Novo Leitor</h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="novoNome">Nome *</label><input type="text" id="novoNome" autocomplete="name" />
+          </div>
+          <div class="form-group">
+            <label for="novoCPF">CPF *</label>
+            <input
+              type="text"
+              id="novoCPF"
+              maxlength="14"
+              inputmode="numeric"
+              placeholder="000.000.000-00"
+              oninput="mascaraCPF(this)"
+            />
+          </div>
+          <div class="form-group">
+            <label for="novoEmail">Email *</label><input type="email" id="novoEmail" autocomplete="email" />
+          </div>
+          <div class="form-group">
+            <label for="novoTelefone">Telefone</label>
+            <input
+              type="text"
+              id="novoTelefone"
+              maxlength="15"
+              placeholder="(71) 99999-0000"
+              oninput="mascaraTelefone(this)"
+              autocomplete="tel"
+            />
+          </div>
+        </div>
+        <div id="novoUsuarioAlert" aria-live="polite"></div>
+        <div class="modal-actions">
+          <button class="btn btn-danger btn-sm" onclick="fecharModal('modalNovoUsuario')">Cancelar</button>
+          <button class="btn btn-primary btn-sm" id="btnCriarUsuario" onclick="createUsuario()">Cadastrar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL — Editar Leitor -->
+    <div id="modalUsuario" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalUsuarioTitulo">
+      <div class="modal-box">
+        <h3 id="modalUsuarioTitulo">Editar Leitor</h3>
+        <input type="hidden" id="editUsuarioId" />
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="editUsuarioNome">Nome *</label><input type="text" id="editUsuarioNome" />
+          </div>
+          <div class="form-group">
+            <label for="editUsuarioEmail">Email *</label><input type="email" id="editUsuarioEmail" />
+          </div>
+          <div class="form-group">
+            <label for="editUsuarioTelefone">Telefone</label><input type="text" id="editUsuarioTelefone" />
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-danger btn-sm" onclick="fecharModal('modalUsuario')">Cancelar</button>
+          <button class="btn btn-primary btn-sm" onclick="updateUsuario()">Salvar Alterações</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL — Central do Leitor -->
+    <div
+      id="modalDetalhesLeitor"
+      class="modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modalDetalhesLeitorTitulo"
+    >
+      <div class="modal-box modal-box-leitor">
+        <h3 id="modalDetalhesLeitorTitulo" class="sr-only">Central do Leitor</h3>
+
+        <div class="leitor-perfil-header">
+          <div class="leitor-avatar" id="leitorDetalheAvatar" aria-hidden="true"></div>
+          <div class="leitor-perfil-info">
+            <p class="leitor-perfil-nome" id="leitorDetalheNome"></p>
+            <p class="leitor-perfil-desde" id="leitorDetalheDesde"></p>
+          </div>
+          <span id="leitorDetalheStatus"></span>
+        </div>
+
+        <div class="leitor-info-cards" id="leitorInfoCards">
+          <div class="leitor-info-card">
+            <svg
+              class="leitor-info-icone"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <rect x="2" y="5" width="20" height="14" rx="2" />
+              <path d="M2 10h20" />
+              <path d="M6 15h4" />
+            </svg>
+            <div>
+              <span class="leitor-info-label">CPF</span>
+              <span class="leitor-info-valor" id="leitorDetalheCPF"></span>
+            </div>
+          </div>
+          <div class="leitor-info-card">
+            <svg
+              class="leitor-info-icone"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path
+                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"
+              />
+            </svg>
+            <div>
+              <span class="leitor-info-label">Telefone</span>
+              <span class="leitor-info-valor" id="leitorDetalheTelefone"></span>
+            </div>
+          </div>
+          <div class="leitor-info-card">
+            <svg
+              class="leitor-info-icone"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <rect x="2" y="4" width="20" height="16" rx="2" />
+              <path d="m2 7 10 6 10-6" />
+            </svg>
+            <div>
+              <span class="leitor-info-label">Email</span>
+              <span class="leitor-info-valor" id="leitorDetalheEmail"></span>
+            </div>
+          </div>
+          <div class="leitor-info-card">
+            <svg
+              class="leitor-info-icone"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <rect x="3" y="4" width="18" height="18" rx="2" />
+              <path d="M16 2v4M8 2v4M3 10h18" />
+            </svg>
+            <div>
+              <span class="leitor-info-label">Data de cadastro</span>
+              <span class="leitor-info-valor" id="leitorDetalheCadastro"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="leitor-resumo-rapido" id="leitorResumoRapido">
+          <div class="leitor-resumo-chip">
+            <span class="leitor-resumo-valor" id="leitorResumoEmprestimos">0</span>
+            <span class="leitor-resumo-label">Empréstimos ativos</span>
+          </div>
+          <div class="leitor-resumo-chip">
+            <span class="leitor-resumo-valor" id="leitorResumoReservas">0</span>
+            <span class="leitor-resumo-label">Reservas ativas</span>
+          </div>
+          <div class="leitor-resumo-chip">
+            <span class="leitor-resumo-valor" id="leitorResumoMultas">0</span>
+            <span class="leitor-resumo-label">Multas pendentes</span>
+          </div>
+        </div>
+
+        <div class="dashboard-block leitor-timeline-bloco">
+          <h3 class="block-title">Linha do Tempo</h3>
+          <div id="leitorTimeline" class="leitor-timeline"></div>
+        </div>
+
+        <div class="modal-actions leitor-detalhe-acoes">
+          <button class="btn btn-danger btn-sm" onclick="fecharModal('modalDetalhesLeitor')">Fechar</button>
+          <button
+            class="btn btn-outline btn-sm"
+            id="btnNovaReservaDetalheLeitor"
+            onclick="novaAcaoParaLeitor('reserva')"
+            style="display: none"
+          >
+            Nova Reserva
+          </button>
+          <button
+            class="btn btn-outline btn-sm"
+            id="btnNovoEmprestimoDetalheLeitor"
+            onclick="novaAcaoParaLeitor('emprestimo')"
+            style="display: none"
+          >
+            Novo Empréstimo
+          </button>
+          <button
+            class="btn btn-primary btn-sm"
+            id="btnEditarDetalheLeitor"
+            onclick="
+              fecharModal('modalDetalhesLeitor');
+              openEditUsuario(_leitorDetalheId);
+            "
+            style="display: none"
+          >
+            Editar Cadastro
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL — Editar Livro -->
+    <div id="modalLivro" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalLivroTitulo">
+      <div class="modal-box">
+        <h3 id="modalLivroTitulo">Editar Livro</h3>
+        <input type="hidden" id="editLivroId" />
+        <div class="form-grid">
+          <div class="form-group" style="grid-column: 1/-1">
+            <label for="editLivroTitulo">Título *</label>
+            <input type="text" id="editLivroTitulo" />
+          </div>
+          <div class="form-group" style="grid-column: 1/-1">
+            <label>Autor(es) *</label>
+            <div class="chip-select" id="editAutoresWrap">
+              <div class="chip-select-inner">
+                <div class="chip-select-chips" id="editAutoresChips"></div>
+                <input
+                  type="text"
+                  class="chip-select-input"
+                  id="editAutoresInput"
+                  placeholder="Pesquisar autor..."
+                  autocomplete="off"
+                />
+              </div>
+              <div class="chip-select-dropdown" id="editAutoresDrop" style="display: none"></div>
+            </div>
+            <select id="editLivroAutores" multiple style="display: none" aria-hidden="true"></select>
+          </div>
+          <div class="form-group">
+            <label for="comboEditCategoriaInput">Categoria *</label>
+            <div class="combo-select" id="comboEditCategoriaWrap">
+              <input
+                type="text"
+                class="combo-select-input"
+                id="comboEditCategoriaInput"
+                placeholder="Pesquisar categoria..."
+                autocomplete="off"
+              />
+              <div class="chip-select-dropdown" id="comboEditCategoriaDrop" style="display: none"></div>
+            </div>
+            <select id="editLivroCategoria" style="display: none" aria-hidden="true">
+              <option value="">Selecione...</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="comboEditEditoraInput">Editora *</label>
+            <div class="combo-select" id="comboEditEditoraWrap">
+              <input
+                type="text"
+                class="combo-select-input"
+                id="comboEditEditoraInput"
+                placeholder="Pesquisar editora..."
+                autocomplete="off"
+              />
+              <div class="chip-select-dropdown" id="comboEditEditoraDrop" style="display: none"></div>
+            </div>
+            <select id="editLivroEditora" style="display: none" aria-hidden="true">
+              <option value="">Selecione...</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="editLivroAno">Ano de Publicação</label>
+            <input type="number" id="editLivroAno" min="1000" max="2100" />
+          </div>
+          <div class="form-group">
+            <label for="editLivroISBN">ISBN *</label>
+            <input type="text" id="editLivroISBN" />
+          </div>
+        </div>
+        <div id="livroEditAlert" aria-live="polite"></div>
+        <div class="modal-actions">
+          <button class="btn btn-danger btn-sm" onclick="fecharModal('modalLivro')">Cancelar</button>
+          <button class="btn btn-primary btn-sm" id="btnSalvarLivro" onclick="updateLivro()">Salvar Alterações</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL — Novo Livro -->
+    <div
+      id="modalNovoLivro"
+      class="modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modalNovoLivroTitulo"
+    >
+      <div class="modal-box">
+        <h3 id="modalNovoLivroTitulo">Novo Livro</h3>
+        <div class="form-grid">
+          <div class="form-group" style="grid-column: 1/-1">
+            <label for="livroTitulo">Título *</label>
+            <input type="text" id="livroTitulo" />
+          </div>
+          <div class="form-group" style="grid-column: 1/-1">
+            <label>Autor(es) *</label>
+            <div class="chip-select" id="novoAutoresWrap">
+              <div class="chip-select-inner">
+                <div class="chip-select-chips" id="novoAutoresChips"></div>
+                <input
+                  type="text"
+                  class="chip-select-input"
+                  id="novoAutoresInput"
+                  placeholder="Pesquisar autor..."
+                  autocomplete="off"
+                />
+              </div>
+              <div class="chip-select-dropdown" id="novoAutoresDrop" style="display: none"></div>
+            </div>
+            <select id="livroAutores" multiple style="display: none" aria-hidden="true"></select>
+          </div>
+          <div class="form-group">
+            <label for="comboNovoCategoriaInput">Categoria *</label>
+            <div class="combo-select" id="comboNovoCategoriaWrap">
+              <input
+                type="text"
+                class="combo-select-input"
+                id="comboNovoCategoriaInput"
+                placeholder="Pesquisar categoria..."
+                autocomplete="off"
+              />
+              <div class="chip-select-dropdown" id="comboNovoCategoriaDrop" style="display: none"></div>
+            </div>
+            <select id="livroCategoria" style="display: none" aria-hidden="true">
+              <option value="">Selecione...</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="comboNovoEditoraInput">Editora *</label>
+            <div class="combo-select" id="comboNovoEditoraWrap">
+              <input
+                type="text"
+                class="combo-select-input"
+                id="comboNovoEditoraInput"
+                placeholder="Pesquisar editora..."
+                autocomplete="off"
+              />
+              <div class="chip-select-dropdown" id="comboNovoEditoraDrop" style="display: none"></div>
+            </div>
+            <select id="livroEditora" style="display: none" aria-hidden="true">
+              <option value="">Selecione...</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="livroAno">Ano de Publicação</label>
+            <input type="number" id="livroAno" min="1000" max="2100" />
+          </div>
+          <div class="form-group">
+            <label for="livroISBN">ISBN *</label>
+            <input type="text" id="livroISBN" />
+          </div>
+        </div>
+        <div id="livroModalAlert" aria-live="polite"></div>
+        <div class="modal-actions">
+          <button class="btn btn-danger btn-sm" onclick="fecharModal('modalNovoLivro')">Cancelar</button>
+          <button class="btn btn-primary btn-sm" id="btnCadLivro" onclick="createLivro()">Cadastrar Livro</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAIS — Criação rápida de Categoria/Editora/Autor (17/07/2026). Abrem
+         por cima do modal de cadastro/edição de Livro (empilhados, sem fechá-lo)
+         quando o usuário escolhe "+ Criar" num dos seletores pesquisáveis. -->
+    <div
+      id="modalNovaCategoria"
+      class="modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modalNovaCategoriaTitulo"
+    >
+      <div class="modal-box modal-box-sm">
+        <h3 id="modalNovaCategoriaTitulo">Nova Categoria</h3>
+        <div class="form-grid">
+          <div class="form-group" style="grid-column: 1/-1">
+            <label for="novaCategoriaNome">Nome *</label>
+            <input type="text" id="novaCategoriaNome" />
+          </div>
+          <div class="form-group" style="grid-column: 1/-1">
+            <label for="novaCategoriaDescricao">Descrição (opcional)</label>
+            <textarea id="novaCategoriaDescricao" rows="2"></textarea>
+          </div>
+        </div>
+        <div id="novaCategoriaAlert" aria-live="polite"></div>
+        <div class="modal-actions">
+          <button class="btn btn-danger btn-sm" onclick="fecharModal('modalNovaCategoria')">Cancelar</button>
+          <button class="btn btn-primary btn-sm" id="btnCriarCategoria" onclick="criarCategoriaRapida()">
+            Criar Categoria
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div
+      id="modalNovaEditora"
+      class="modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modalNovaEditoraTitulo"
+    >
+      <div class="modal-box modal-box-sm">
+        <h3 id="modalNovaEditoraTitulo">Nova Editora</h3>
+        <div class="form-grid">
+          <div class="form-group" style="grid-column: 1/-1">
+            <label for="novaEditoraNome">Nome *</label>
+            <input type="text" id="novaEditoraNome" />
+          </div>
+          <div class="form-group" style="grid-column: 1/-1">
+            <label for="novaEditoraSite">Site (opcional)</label>
+            <input type="text" id="novaEditoraSite" placeholder="https://..." />
+          </div>
+          <div class="form-group" style="grid-column: 1/-1">
+            <label for="novaEditoraCidade">Cidade (opcional)</label>
+            <input type="text" id="novaEditoraCidade" />
+          </div>
+        </div>
+        <div id="novaEditoraAlert" aria-live="polite"></div>
+        <div class="modal-actions">
+          <button class="btn btn-danger btn-sm" onclick="fecharModal('modalNovaEditora')">Cancelar</button>
+          <button class="btn btn-primary btn-sm" id="btnCriarEditora" onclick="criarEditoraRapida()">
+            Criar Editora
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div
+      id="modalNovoAutor"
+      class="modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modalNovoAutorTitulo"
+    >
+      <div class="modal-box modal-box-sm">
+        <h3 id="modalNovoAutorTitulo">Novo Autor</h3>
+        <div class="form-grid">
+          <div class="form-group" style="grid-column: 1/-1">
+            <label for="novoAutorNome">Nome *</label>
+            <input type="text" id="novoAutorNome" />
+          </div>
+        </div>
+        <div id="novoAutorAlert" aria-live="polite"></div>
+        <div class="modal-actions">
+          <button class="btn btn-danger btn-sm" onclick="fecharModal('modalNovoAutor')">Cancelar</button>
+          <button class="btn btn-primary btn-sm" id="btnCriarAutor" onclick="criarAutorRapido()">Criar Autor</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL — Detalhes do Livro -->
+    <div
+      id="modalDetalhesLivro"
+      class="modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modalDetalhesTitulo"
+    >
+      <div class="modal-box modal-box-leitor">
+        <h3 id="modalDetalhesTitulo" class="sr-only">Detalhes do Livro</h3>
+        <div class="detalhe-cabecalho livro-detalhe-cabecalho">
+          <!-- O placeholder de capa "Sem capa" foi removido em 16/07/2026
+               (feedback de design: "esse espaço não agrega valor e ainda dá
+               a impressão de que falta alguma funcionalidade" — sem upload
+               de imagem real, é melhor usar a largura toda para o título). -->
+          <div class="livro-detalhe-titulo-bloco">
+            <p class="detalhe-titulo-livro" id="detalheTitulo"></p>
+            <p class="detalhe-autores-livro" id="detalheAutores"></p>
+            <p class="livro-categoria-linha" id="detalheCategoriaLinha"></p>
+          </div>
+          <!-- Status de disponibilidade (19/07/2026, quinta rodada de feedback):
+               antes repetia a mesma informação duas vezes — rótulo
+               "Disponibilidade" (óbvio pelo contexto, é o único indicador do
+               cabeçalho) + fração "0/1" ao lado da palavra de status
+               "Indisponível". Agora é só o status + uma frase natural com a
+               contagem já embutida ("0 de 1 exemplar disponível"). -->
+          <div class="livro-disponibilidade-badge" id="detalheDisponibilidadeBadge"></div>
+        </div>
+
+        <!-- Seção 1: dados permanentes do livro (16/07/2026 — reorganização em
+             3 seções pedida no feedback de design, para não misturar dado
+             bibliográfico, estado atual e histórico na mesma tela). -->
+        <h4 class="livro-secao-titulo">Informações bibliográficas</h4>
+        <div class="detalhe-grid">
+          <div class="detalhe-item">
+            <span class="detalhe-label">ISBN</span>
+            <span class="detalhe-valor" id="detalheISBN"></span>
+          </div>
+          <div class="detalhe-item">
+            <span class="detalhe-label">Ano</span>
+            <span class="detalhe-valor" id="detalheAno"></span>
+          </div>
+          <div class="detalhe-item">
+            <span class="detalhe-label">Editora</span>
+            <span class="detalhe-valor" id="detalheEditora"></span>
+          </div>
+          <div class="detalhe-item">
+            <span class="detalhe-label">Categoria</span>
+            <span class="detalhe-valor" id="detalheCategoria"></span>
+          </div>
+        </div>
+
+        <!-- Seção 2: o que está acontecendo com o livro agora. Dividida em
+             Acervo/Circulação em 19/07/2026 (quinta rodada de feedback):
+             "aqui há mistura de conceitos... eu dividiria. Assim você separa
+             patrimônio de movimentação." O chip "Emprestados" saiu (dedutível
+             de Exemplares/Disponíveis, e já visível no status do cabeçalho);
+             "Reservas" migrou de Acervo para Circulação (é sinal de demanda,
+             não de patrimônio). -->
+        <h5 class="livro-detalhe-subtitulo livro-detalhe-subtitulo--tight">Acervo</h5>
+        <div class="livro-estatisticas livro-estatisticas--3">
+          <div class="leitor-resumo-chip">
+            <span class="leitor-resumo-valor" id="livroEstTotal">0</span>
+            <span class="leitor-resumo-label">Exemplares</span>
+          </div>
+          <div class="leitor-resumo-chip">
+            <span class="leitor-resumo-valor" id="livroEstDisponiveis">0</span>
+            <span class="leitor-resumo-label">Disponíveis</span>
+          </div>
+          <div class="leitor-resumo-chip">
+            <span class="leitor-resumo-valor" id="livroEstBaixados">0</span>
+            <span class="leitor-resumo-label">Baixados</span>
+          </div>
+        </div>
+        <h5 class="livro-detalhe-subtitulo livro-detalhe-subtitulo--tight">Circulação</h5>
+        <div class="livro-estatisticas livro-estatisticas--3">
+          <div class="leitor-resumo-chip">
+            <span class="leitor-resumo-valor" id="livroCircEmprestimos">0</span>
+            <span class="leitor-resumo-label">Empréstimos</span>
+          </div>
+          <div class="leitor-resumo-chip">
+            <span class="leitor-resumo-valor" id="livroEstReservas">0</span>
+            <span class="leitor-resumo-label">Reservas</span>
+          </div>
+          <div class="leitor-resumo-chip">
+            <span class="leitor-resumo-valor" id="livroCircAtrasadas">0</span>
+            <span class="leitor-resumo-label">Devoluções com atraso</span>
+          </div>
+        </div>
+        <!-- "Última movimentação" (19/07/2026, quinta rodada): resume o
+             evento mais recente de qualquer tipo antes das 3 linhas
+             específicas — "assim você entende rapidamente sem ler as 3". -->
+        <div class="livro-circulacao-info">
+          <span>Última movimentação: <strong id="livroUltimaMovimentacao">—</strong></span>
+          <span>Último empréstimo: <strong id="livroUltimoEmprestimo">—</strong></span>
+          <span>Última devolução: <strong id="livroUltimaDevolucao">—</strong></span>
+          <span>Última reserva: <strong id="livroUltimaReserva">—</strong></span>
+        </div>
+
+        <!-- Exemplares e reservas lado a lado (16/07/2026). -->
+        <div class="livro-exemplares-reservas-grid">
+          <div>
+            <h5 class="livro-detalhe-subtitulo livro-detalhe-subtitulo--tight">Exemplares</h5>
+            <div class="livro-exemplares-cards" id="livroDetalheExemplares"></div>
+          </div>
+          <div>
+            <h5 class="livro-detalhe-subtitulo livro-detalhe-subtitulo--tight" id="livroDetalheReservasTitulo">
+              Reservas
+            </h5>
+            <div class="livro-reservas-lista" id="livroDetalheReservas"></div>
+          </div>
+        </div>
+
+        <!-- Seção 3: o que já aconteceu com o livro. O título fica fora do
+             dashboard-block de propósito — :first-of-type em .livro-secao-titulo
+             só funciona comparando irmãos do mesmo pai (ver styles.css). -->
+        <h4 class="livro-secao-titulo">Histórico de circulação</h4>
+        <div class="dashboard-block leitor-timeline-bloco">
+          <div id="livroDetalheTimeline" class="leitor-timeline"></div>
+        </div>
+
+        <div class="modal-actions livro-detalhe-acoes">
+          <button class="btn btn-danger btn-sm" onclick="fecharModal('modalDetalhesLivro')">Fechar</button>
+          <!-- Terciário (16/07/2026): editar dado bibliográfico é bem menos
+               frequente que emprestar ou gerenciar exemplares. -->
+          <button
+            class="btn btn-ghost btn-sm"
+            id="btnEditarDetalhe"
+            onclick="
+              fecharModal('modalDetalhesLivro');
+              openEditLivro(_livroDetalheId);
+            "
+            style="display: none"
+          >
+            Editar
+          </button>
+          <button
+            class="btn btn-outline btn-sm"
+            id="btnGerenciarExemplaresDetalheLivro"
+            onclick="
+              fecharModal('modalDetalhesLivro');
+              abrirGerenciarExemplares(_livroDetalheId);
+            "
+            style="display: none"
+          >
+            Controle de Exemplares
+          </button>
+          <!-- Nova Reserva (19/07/2026, quinta rodada de feedback): "se um
+               livro está indisponível e possui fila de espera, o
+               bibliotecário provavelmente vai querer criar uma reserva
+               diretamente dali". Secundário — Novo Empréstimo continua o
+               mais frequente no dia a dia; reserva só faz sentido quando o
+               livro já está indisponível. -->
+          <button
+            class="btn btn-outline btn-sm"
+            id="btnNovaReservaDetalheLivro"
+            onclick="novaReservaDoLivro()"
+            style="display: none"
+          >
+            Nova Reserva
+          </button>
+          <!-- Botão primário = ação mais comum no dia a dia (pedido de design
+               de 16/07/2026: "o botão primário deveria ser a ação mais
+               comum"). Novo Empréstimo tende a ser mais frequente que Editar
+               (que muda dado bibliográfico, raramente alterado). Fica por
+               último/mais à direita, seguindo o padrão do resto do app. -->
+          <button
+            class="btn btn-primary btn-sm"
+            id="btnNovoEmprestimoDetalheLivro"
+            onclick="novoEmprestimoDoLivro()"
+            style="display: none"
+          >
+            Novo Empréstimo
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL — Novo Exemplar (16/07/2026: cadastro inline virou modal;
+         código patrimonial não é mais digitado — gerado automaticamente pelo
+         banco (DEFAULT gerar_codigo_patrimonial()); status inicial restrito a
+         Disponível/Manutenção/Baixado, com motivo obrigatório quando Baixado
+         — "Emprestado" só surge através de um empréstimo de verdade. -->
+    <div
+      id="modalNovoExemplar"
+      class="modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modalNovoExemplarTitulo"
+    >
+      <div class="modal-box">
+        <h3 id="modalNovoExemplarTitulo">Novo Exemplar</h3>
+        <div class="form-grid">
+          <div class="form-group" style="grid-column: 1/-1">
+            <label for="exemplarLivro">Livro *</label>
+            <select id="exemplarLivro">
+              <option value="">Selecione...</option>
+            </select>
+          </div>
+          <div class="form-group" style="grid-column: 1/-1">
+            <label>Código patrimonial</label>
+            <p class="exemplar-codigo-auto" id="exemplarCodigoPreview">Calculando o próximo código...</p>
+          </div>
+          <div class="form-group">
+            <label for="exemplarStatus">Status inicial *</label>
+            <select id="exemplarStatus" onchange="toggleExemplarMotivoBaixa()">
+              <option value="Disponivel">Disponível</option>
+              <option value="Manutencao">Manutenção</option>
+              <option value="Baixado">Baixado</option>
+            </select>
+          </div>
+          <div class="form-group" id="exemplarMotivoBaixaWrap" style="display: none">
+            <label for="exemplarMotivoBaixa">Motivo da baixa *</label>
+            <select id="exemplarMotivoBaixa">
+              <option value="">Selecione...</option>
+              <option value="Perda">Perda</option>
+              <option value="Extravio">Extravio</option>
+              <option value="Danificado">Danificado</option>
+              <option value="Descartado">Descartado</option>
+              <option value="Outro">Outro</option>
+            </select>
+          </div>
+        </div>
+        <div id="exemplarModalAlert" aria-live="polite"></div>
+        <div class="modal-actions">
+          <button class="btn btn-danger btn-sm" onclick="fecharModal('modalNovoExemplar')">Cancelar</button>
+          <button class="btn btn-primary btn-sm" id="btnCadExemplar" onclick="createExemplar()">
+            Cadastrar Exemplar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL — Alterar Status do Exemplar (16/07/2026: substitui o select
+         inline nas tabelas de exemplar; compartilhado entre a tela de
+         Exemplares, o modal Gerenciar Exemplares e o Detalhe do Exemplar.
+         Nunca oferece "Emprestado" — esse status só surge via empréstimo. -->
+    <div
+      id="modalAlterarStatusExemplar"
+      class="modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modalAlterarStatusExemplarTitulo"
+    >
+      <div class="modal-box">
+        <h3 id="modalAlterarStatusExemplarTitulo">Alterar Status</h3>
+        <p class="livro-gerenciar-subtitulo" id="alterarStatusExemplarCodigo"></p>
+        <div class="form-grid">
+          <div class="form-group" style="grid-column: 1/-1">
+            <label for="alterarStatusExemplarNovo">Novo status *</label>
+            <select id="alterarStatusExemplarNovo" onchange="toggleAlterarStatusExemplarMotivo()">
+              <option value="Disponivel">Disponível</option>
+              <option value="Manutencao">Manutenção</option>
+              <option value="Baixado">Baixado</option>
+            </select>
+          </div>
+          <div class="form-group" id="alterarStatusExemplarMotivoWrap" style="grid-column: 1/-1; display: none">
+            <label for="alterarStatusExemplarMotivo">Motivo da baixa *</label>
+            <select id="alterarStatusExemplarMotivo">
+              <option value="">Selecione...</option>
+              <option value="Perda">Perda</option>
+              <option value="Extravio">Extravio</option>
+              <option value="Danificado">Danificado</option>
+              <option value="Descartado">Descartado</option>
+              <option value="Outro">Outro</option>
+            </select>
+          </div>
+        </div>
+        <div id="alterarStatusExemplarAlert" aria-live="polite"></div>
+        <div class="modal-actions">
+          <button class="btn btn-danger btn-sm" onclick="fecharModal('modalAlterarStatusExemplar')">Cancelar</button>
+          <button
+            class="btn btn-primary btn-sm"
+            id="btnSalvarAlterarStatusExemplar"
+            onclick="salvarAlterarStatusExemplar()"
+          >
+            Salvar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL — Confirmar Exclusão de Exemplar. Só chega a abrir quando o
+         exemplar não está emprestado e não tem histórico de empréstimo —
+         deleteExemplar() já checa isso antes e, se bloqueado, abre
+         modalExemplarNaoExcluivel em vez deste (17/07/2026). -->
+    <div id="modalConfirmarExclusaoExemplar" class="modal-overlay" role="dialog" aria-modal="true">
+      <div class="modal-box modal-confirm">
+        <h3>Confirmar Exclusão</h3>
+        <p>Tem certeza que deseja excluir este exemplar? Esta ação <strong>não pode ser desfeita</strong>.</p>
+        <div class="modal-actions">
+          <button class="btn btn-danger btn-sm" onclick="fecharModal('modalConfirmarExclusaoExemplar')">
+            Cancelar
+          </button>
+          <button
+            class="btn btn-primary btn-sm"
+            style="background: var(--primary)"
+            onclick="_confirmarDeleteExemplar()"
+          >
+            Excluir permanentemente
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL — Exemplar não pode ser excluído (17/07/2026, feedback sobre a
+         tela de Exemplares): mostrado no lugar da confirmação genérica
+         quando o exemplar está emprestado ou tem histórico de circulação —
+         a exclusão física só faz sentido para um exemplar cadastrado por
+         engano e nunca usado; o caminho normal para "encerrar" um exemplar
+         é o status Baixado (exclusão lógica). -->
+    <div id="modalExemplarNaoExcluivel" class="modal-overlay" role="dialog" aria-modal="true">
+      <div class="modal-box modal-confirm">
+        <h3>Não é possível excluir</h3>
+        <p id="exemplarNaoExcluivelMsg"></p>
+        <div class="modal-actions">
+          <button class="btn btn-primary btn-sm" onclick="fecharModal('modalExemplarNaoExcluivel')">Entendi</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL — Detalhe do Exemplar (16/07/2026, reforma da tela de
+         Exemplares): tela de detalhe completa, no mesmo padrão de Livros/
+         Leitores — dados do exemplar, quem está com ele (se emprestado),
+         reservas ativas do livro e histórico completo (cadastro, empréstimos/
+         devoluções, mudanças de status/baixa). Acessível a partir da tela de
+         Exemplares e do drill-down no Detalhe do Livro (o botão "Voltar ao
+         Livro" só aparece nesse segundo caso). -->
+    <div
+      id="modalDetalheExemplar"
+      class="modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modalDetalheExemplarTitulo"
+    >
+      <div class="modal-box modal-box-leitor">
+        <h3 id="modalDetalheExemplarTitulo" class="sr-only">Detalhes do Exemplar</h3>
+        <!-- Hierarquia visual invertida em 17/07/2026 (feedback de design:
+             "o usuário procura pelo livro, não pelo código") — o título do
+             livro passa a ser o elemento grande/sério do cabeçalho; o código
+             patrimonial vira uma etiqueta pequena e monoespaçada abaixo,
+             tratamento de identificador em vez de título. -->
+        <div class="detalhe-cabecalho livro-detalhe-cabecalho">
+          <div>
+            <p class="detalhe-titulo-livro" id="detalheExemplarLivro"></p>
+            <p class="codigo-patrimonial" id="detalheExemplarCodigo"></p>
+          </div>
+          <div id="detalheExemplarStatus"></div>
+        </div>
+
+        <!-- Reorganizado em blocos nomeados em 19/07/2026 (feedback de
+             design: "está correto, porém frio") — antes era um único
+             .detalhe-grid misturando dados do livro, dados próprios do
+             exemplar e estatísticas na mesma lista sem hierarquia. Mesmo
+             padrão .dashboard-block/.livro-secao-titulo já usado abaixo em
+             "Empréstimo atual"/"Reservas deste livro"/"Histórico".
+             Revisado em 19/07/2026 (sexta rodada de feedback): "Informações
+             do livro" e "Situação do exemplar" eram dois blocos pequenos e
+             adjacentes tratando do mesmo assunto — "o que é isto" — e o
+             detalhe "praticamente pulava do título para as estatísticas".
+             Fundidos em um único bloco "Informações", sem duplicar
+             Livro/Código (já exibidos no cabeçalho acima). -->
+        <div class="dashboard-block">
+          <h4 class="livro-secao-titulo">Informações</h4>
+          <div class="detalhe-grid">
+            <div class="detalhe-item">
+              <span class="detalhe-label">ISBN</span>
+              <span class="detalhe-valor" id="detalheExemplarIsbn"></span>
+            </div>
+            <div class="detalhe-item">
+              <span class="detalhe-label">Categoria</span>
+              <span class="detalhe-valor" id="detalheExemplarCategoria"></span>
+            </div>
+            <div class="detalhe-item">
+              <span class="detalhe-label">Editora</span>
+              <span class="detalhe-valor" id="detalheExemplarEditora"></span>
+            </div>
+            <div class="detalhe-item">
+              <span class="detalhe-label">Ano</span>
+              <span class="detalhe-valor" id="detalheExemplarAno"></span>
+            </div>
+            <div class="detalhe-item">
+              <span class="detalhe-label">Status</span>
+              <span class="detalhe-valor" id="detalheExemplarStatusTexto"></span>
+            </div>
+            <div class="detalhe-item">
+              <span class="detalhe-label">Data de cadastro</span>
+              <span class="detalhe-valor" id="detalheExemplarCadastro"></span>
+            </div>
+            <div class="detalhe-item" id="detalheExemplarMotivoWrap" style="display: none">
+              <span class="detalhe-label">Motivo</span>
+              <span class="detalhe-valor" id="detalheExemplarMotivo"></span>
+            </div>
+            <div class="detalhe-item" id="detalheExemplarDataBaixaWrap" style="display: none">
+              <span class="detalhe-label">Data da baixa</span>
+              <span class="detalhe-valor" id="detalheExemplarDataBaixa"></span>
+            </div>
+            <div class="detalhe-item" id="detalheExemplarResponsavelBaixaWrap" style="display: none">
+              <span class="detalhe-label">Responsável</span>
+              <span class="detalhe-valor" id="detalheExemplarResponsavelBaixa"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-block">
+          <h4 class="livro-secao-titulo">Estatísticas</h4>
+          <!-- "Reservado"/"Renovado" (sugeridos no feedback de 19/07/2026)
+               ficaram de fora deliberadamente — nenhum dos dois existe como
+               funcionalidade real hoje (reserva é por livro, não por
+               exemplar específico; não há mecanismo de renovação no
+               sistema). Mostrar "Nunca" ali sugeriria uma função que não
+               existe. Ver Achado 37. -->
+          <div class="detalhe-grid">
+            <div class="detalhe-item">
+              <span class="detalhe-label">Total de empréstimos</span>
+              <span class="detalhe-valor" id="detalheExemplarTotalEmprestimos"></span>
+            </div>
+            <!-- "Último uso" clicável (19/07/2026, sexta rodada de feedback —
+                 "integrar navegação Exemplar→Empréstimo"): abre o Detalhe do
+                 Empréstimo mais recente deste exemplar (ultimo_emprestimo_id,
+                 ver exemplarDetalhe no backend). Vira <span> outra vez quando
+                 não há nenhum empréstimo — nada para navegar. -->
+            <div class="detalhe-item">
+              <span class="detalhe-label">Último uso</span>
+              <span class="detalhe-valor" id="detalheExemplarUltimoEmprestimo"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-block" id="detalheExemplarAtualBloco" style="display: none">
+          <h4 class="livro-secao-titulo">Empréstimo atual</h4>
+          <!-- 18/07/2026, feedback de design: Retirada/Prazo/Atraso viraram
+               três campos separados e sempre visíveis (quando aplicável), em
+               vez de um único rótulo que alternava entre "Devolução prevista"
+               e "Dias de atraso". Concentra tudo que a lista principal não
+               mostra mais (ver renderExemplares em js/ui.js). -->
+          <div class="detalhe-grid">
+            <div class="detalhe-item">
+              <span class="detalhe-label">Leitor</span>
+              <span class="detalhe-valor" id="detalheExemplarLeitorAtual"></span>
+            </div>
+            <div class="detalhe-item">
+              <span class="detalhe-label">Retirada</span>
+              <span class="detalhe-valor" id="detalheExemplarRetiradaAtual"></span>
+            </div>
+            <div class="detalhe-item">
+              <span class="detalhe-label">Prazo</span>
+              <span class="detalhe-valor" id="detalheExemplarPrevisaoAtual"></span>
+            </div>
+            <div class="detalhe-item" id="detalheExemplarAtrasoWrap" style="display: none">
+              <span class="detalhe-label">Atraso</span>
+              <span class="detalhe-valor" id="detalheExemplarAtrasoAtual"></span>
+            </div>
+            <!-- "Ver empréstimo" (19/07/2026, sexta rodada de feedback —
+                 "integrar navegação Exemplar→Empréstimo"): abre o Detalhe do
+                 Empréstimo em andamento (emprestimo_atual_id, ver
+                 exemplarDetalhe no backend), mesmo padrão de botão-link do
+                 bloco "Relacionados" do modal de Empréstimo (Achado 38). -->
+            <div class="detalhe-item">
+              <span class="detalhe-label">Empréstimo</span>
+              <button type="button" class="btn-link detalhe-valor" id="detalheExemplarVerEmprestimo">
+                Ver detalhes
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-block" id="detalheExemplarReservasBloco" style="display: none">
+          <h4 class="livro-secao-titulo" id="detalheExemplarReservasTitulo">Reservas deste livro</h4>
+          <div class="livro-exemplares-lista" id="detalheExemplarReservas"></div>
+        </div>
+
+        <div class="dashboard-block leitor-timeline-bloco">
+          <h4 class="livro-secao-titulo">Histórico deste exemplar</h4>
+          <div id="detalheExemplarTimeline" class="leitor-timeline"></div>
+        </div>
+
+        <div class="modal-actions livro-detalhe-acoes">
+          <button class="btn btn-danger btn-sm" onclick="fecharModal('modalDetalheExemplar')">Fechar</button>
+          <button
+            class="btn btn-ghost btn-sm"
+            id="btnExcluirDetalheExemplar"
+            onclick="excluirExemplarDetalhe()"
+            style="display: none"
+          >
+            Excluir
+          </button>
+          <button
+            class="btn btn-ghost btn-sm"
+            id="btnVoltarAoLivroExemplar"
+            onclick="voltarAoLivroDoExemplar()"
+            style="display: none"
+          >
+            Voltar ao Livro
+          </button>
+          <button
+            class="btn btn-primary btn-sm"
+            id="btnAlterarStatusDetalheExemplar"
+            onclick="alterarStatusExemplarDetalhe()"
+            style="display: none"
+          >
+            Alterar Status
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL — Controle de Exemplares (escopado por livro) -->
+    <!-- Renomeado de "Gerenciar Exemplares" em 19/07/2026 (oitava rodada de
+         feedback — "'Gerenciar Exemplares' parece uma tela administrativa;
+         'Controle de Exemplares' comunica melhor que ali também dá pra
+         consultar o estado das cópias"). IDs internos mantidos como estavam
+         (gerenciarExemplares*) para não inflar o diff — só o texto visível
+         mudou. -->
+    <div
+      id="modalGerenciarExemplares"
+      class="modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modalGerenciarExemplaresTitulo"
+    >
+      <div class="modal-box">
+        <h3 id="modalGerenciarExemplaresTitulo">Controle de Exemplares</h3>
+
+        <!-- Resumo do livro (19/07/2026, oitava rodada de feedback — "assim
+             o bibliotecário entende rapidamente a situação do livro antes de
+             tomar qualquer ação"): título + autor + contagem por status,
+             preenchido em carregarGerenciarExemplares (js/ui.js). -->
+        <div class="livro-gerenciar-resumo">
+          <p class="livro-gerenciar-titulo" id="gerenciarExemplaresLivroTitulo"></p>
+          <p class="livro-gerenciar-autor" id="gerenciarExemplaresLivroAutor"></p>
+          <div class="livro-gerenciar-stats" id="gerenciarExemplaresStats"></div>
+        </div>
+        <!-- Aviso de reservas ativas (19/07/2026): "hoje fica solto — eu
+             colocaria um pequeno aviso" — escondido quando não há reservas. -->
+        <div class="livro-gerenciar-reservas-aviso" id="gerenciarExemplaresReservasAviso" style="display: none"></div>
+
+        <div id="gerenciarExemplaresAlert" aria-live="polite"></div>
+
+        <div class="livro-exemplares-lista livro-exemplares-lista--cards" id="gerenciarExemplaresLista"></div>
+
+        <h4 class="livro-gerenciar-secao-titulo">Adicionar exemplar</h4>
+        <div class="livro-add-exemplar-row">
+          <div class="form-group">
+            <label for="gerenciarExemplarStatus">Status inicial</label>
+            <select id="gerenciarExemplarStatus" onchange="toggleGerenciarExemplarMotivo()">
+              <option value="Disponivel">Disponível</option>
+              <option value="Manutencao">Manutenção</option>
+              <option value="Baixado">Baixado</option>
+            </select>
+          </div>
+          <div class="form-group" id="gerenciarExemplarMotivoWrap" style="display: none">
+            <label for="gerenciarExemplarMotivo">Motivo da baixa</label>
+            <select id="gerenciarExemplarMotivo">
+              <option value="">Selecione...</option>
+              <option value="Perda">Perda</option>
+              <option value="Extravio">Extravio</option>
+              <option value="Danificado">Danificado</option>
+              <option value="Descartado">Descartado</option>
+              <option value="Outro">Outro</option>
+            </select>
+          </div>
+          <button class="btn btn-primary btn-sm" id="btnAdicionarExemplar" onclick="adicionarExemplarAoLivro()">
+            Adicionar Exemplar
+          </button>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn btn-danger btn-sm" onclick="fecharModal('modalGerenciarExemplares')">Fechar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL — Confirmar Exclusão -->
+    <div id="modalConfirmarExclusao" class="modal-overlay" role="dialog" aria-modal="true">
+      <div class="modal-box modal-confirm">
+        <h3>Confirmar Exclusão</h3>
+        <p>
+          Tem certeza que deseja excluir este livro? Esta ação <strong>não pode ser desfeita</strong> e removerá todos
+          os dados associados.
+        </p>
+        <div class="modal-actions">
+          <button class="btn btn-danger btn-sm" onclick="fecharModal('modalConfirmarExclusao')">Cancelar</button>
+          <button class="btn btn-primary btn-sm" style="background: var(--primary)" onclick="_confirmarDelete()">
+            Excluir permanentemente
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL — Novo Empréstimo -->
+    <div
+      id="modalNovoEmprestimo"
+      class="modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modalNovoEmprestimoTitulo"
+    >
+      <div class="modal-box">
+        <h3 id="modalNovoEmprestimoTitulo">Novo Empréstimo</h3>
+        <div id="emprestimoModalAlert" aria-live="polite"></div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="emprestimoUsuario">Leitor *</label>
+            <select id="emprestimoUsuario">
+              <option value="">Selecione...</option>
+            </select>
+            <div class="leitor-fixo" id="emprestimoUsuarioFixo" style="display: none">
+              <span class="leitor-fixo-nome" id="emprestimoUsuarioFixoNome"></span>
+              <button type="button" class="leitor-fixo-alterar" onclick="alterarLeitorFixo('emprestimo')">
+                Alterar
+              </button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="emprestimoLivro">Livro *</label>
+            <select id="emprestimoLivro" onchange="aoEscolherLivroEmprestimo()">
+              <option value="">Selecione...</option>
+            </select>
+          </div>
+          <div
+            class="emprestimo-resumo-livro"
+            id="emprestimoResumoLivro"
+            style="display: none; grid-column: 1 / -1"
+          ></div>
+          <div class="form-group">
+            <label for="emprestimoExemplar">Exemplar Disponível *</label>
+            <select id="emprestimoExemplar" disabled>
+              <option value="">Selecione um livro primeiro...</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="emprestimoDataRetirada">Data de Retirada *</label>
+            <input type="date" id="emprestimoDataRetirada" />
+          </div>
+          <div class="form-group">
+            <label for="emprestimoDataPrevista">Data Prevista Devolução *</label>
+            <input type="date" id="emprestimoDataPrevista" />
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-danger btn-sm" onclick="fecharModal('modalNovoEmprestimo')">Cancelar</button>
+          <button class="btn btn-primary btn-sm" id="btnCadEmprestimo" onclick="createEmprestimo()">
+            Registrar Empréstimo
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL — Confirmar Devolução -->
+    <div
+      id="modalDevolverEmprestimo"
+      class="modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modalDevolverTitulo"
+    >
+      <div class="modal-box modal-confirm">
+        <h3 id="modalDevolverTitulo">Registrar Devolução</h3>
+        <div class="detalhe-cabecalho">
+          <p class="detalhe-titulo-livro" id="devolverLivroTitulo"></p>
+          <p class="detalhe-autores-livro" id="devolverLeitorNome"></p>
+        </div>
+        <div class="detalhe-grid">
+          <div class="detalhe-item">
+            <span class="detalhe-label">Exemplar</span>
+            <span class="detalhe-valor" id="devolverExemplar"></span>
+          </div>
+          <div class="detalhe-item">
+            <span class="detalhe-label">Retirada</span>
+            <span class="detalhe-valor" id="devolverRetirada"></span>
+          </div>
+          <div class="detalhe-item">
+            <span class="detalhe-label">Prevista</span>
+            <span class="detalhe-valor" id="devolverPrevista"></span>
+          </div>
+          <div class="detalhe-item">
+            <span class="detalhe-label">Hoje</span>
+            <span class="detalhe-valor" id="devolverHoje"></span>
+          </div>
+          <div class="detalhe-item" id="devolverDiasWrap" style="display: none">
+            <span class="detalhe-label">Dias de atraso</span>
+            <span class="detalhe-valor" id="devolverDias"></span>
+          </div>
+          <div class="detalhe-item" id="devolverMultaWrap" style="display: none">
+            <span class="detalhe-label">Multa prevista</span>
+            <span class="detalhe-valor" id="devolverMulta"></span>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-danger btn-sm" onclick="fecharModal('modalDevolverEmprestimo')">Cancelar</button>
+          <button class="btn btn-success btn-sm" id="btnConfirmarDevolucao" onclick="confirmarDevolucao()">
+            Registrar Devolução
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL — Detalhes do Empréstimo -->
+    <div
+      id="modalDetalhesEmprestimo"
+      class="modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modalDetalhesEmprestimoTitulo"
+    >
+      <div class="modal-box modal-box-leitor">
+        <h3 id="modalDetalhesEmprestimoTitulo" class="sr-only">Detalhes do Empréstimo</h3>
+        <!-- Reorganizado em 19/07/2026 (quarta rodada de feedback): cabeçalho
+             ganha o código do exemplar como etiqueta (mesmo padrão de
+             Achado 37) e o badge de situação, no lugar dos botões "Ver
+             livro"/"Ver leitor" — a navegação para essas telas passou a
+             viver no bloco "Relacionados", abaixo, junto do Exemplar e da
+             Multa (também clicáveis/informativos), então os atalhos soltos
+             no cabeçalho ficariam redundantes. -->
+        <div class="detalhe-cabecalho livro-detalhe-cabecalho">
+          <div>
+            <p class="detalhe-titulo-livro" id="empDetalheLivroTitulo"></p>
+            <p class="detalhe-autores-livro" id="empDetalheAutores"></p>
+            <p class="codigo-patrimonial" id="empDetalheExemplarCodigo"></p>
+          </div>
+          <div id="empDetalheStatusBadge"></div>
+        </div>
+
+        <!-- Bloco "Resumo" (item pedido explicitamente: "assim o usuário
+             entende rapidamente o estado daquele empréstimo antes de olhar
+             a timeline"). Estado (concluiu ou não) e Resultado (esteve/está
+             no prazo?) viraram dois campos separados em vez de um texto só
+             ("Devolvido com atraso") — mais fácil de escanear. Rótulos
+             renomeados em 19/07/2026 (sétima rodada de feedback — "'Situação'
+             aparece em muitas telas significando outra coisa"): "Status" →
+             "Estado", "Situação" → "Resultado", para não colidir com o
+             sentido de "Situação" já usado na coluna da tabela ao lado
+             (Situação/Detalhe) e em outras telas (Livros, Reservas). -->
+        <div class="dashboard-block">
+          <h4 class="livro-secao-titulo">Resumo</h4>
+          <div class="detalhe-grid">
+            <div class="detalhe-item">
+              <span class="detalhe-label">Estado</span>
+              <span class="detalhe-valor" id="empDetalheStatus"></span>
+            </div>
+            <div class="detalhe-item">
+              <span class="detalhe-label">Resultado</span>
+              <span class="detalhe-valor" id="empDetalheSituacao"></span>
+            </div>
+            <div class="detalhe-item">
+              <span class="detalhe-label">Retirada</span>
+              <span class="detalhe-valor" id="empDetalheRetirada"></span>
+            </div>
+            <div class="detalhe-item">
+              <span class="detalhe-label">Prazo</span>
+              <span class="detalhe-valor" id="empDetalhePrevista"></span>
+            </div>
+            <div class="detalhe-item" id="empDetalheDevolucaoWrap" style="display: none">
+              <span class="detalhe-label">Devolvido em</span>
+              <span class="detalhe-valor" id="empDetalheDevolucao"></span>
+            </div>
+            <div class="detalhe-item" id="empDetalheDiasWrap" style="display: none">
+              <span class="detalhe-label">Dias de atraso</span>
+              <span class="detalhe-valor" id="empDetalheDias"></span>
+            </div>
+            <!-- Responsável escondido quando vazio (19/07/2026, sétima
+                 rodada de feedback — "esconderia completamente quando não
+                 existir... o traço parece informação faltando"); mesmo
+                 princípio já aplicado à timeline desde o Achado 33. -->
+            <div class="detalhe-item" id="empDetalheResponsavelWrap" style="display: none">
+              <span class="detalhe-label">Responsável</span>
+              <span class="detalhe-valor" id="empDetalheResponsavel"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bloco "Relacionados" (item "daria bastante valor"): substitui os
+             antigos botões "Ver livro"/"Ver leitor" e o campo Exemplar solto
+             por uma lista única de navegação — cada item leva direto ao
+             detalhe completo daquela entidade. Multa fica só informativa
+             (valor + status), não clicável: não existe hoje uma tela de
+             detalhe de multa no sistema para levar o clique a algum lugar
+             (ver Achado 38 — mesmo princípio de não sugerir na interface uma
+             ação/destino que o sistema não tem de verdade). -->
+        <div class="dashboard-block">
+          <h4 class="livro-secao-titulo">Relacionados</h4>
+          <div class="detalhe-grid">
+            <div class="detalhe-item">
+              <span class="detalhe-label">Livro</span>
+              <button type="button" class="btn-link detalhe-valor" id="empDetalheAbrirLivro"></button>
+            </div>
+            <div class="detalhe-item">
+              <span class="detalhe-label">Leitor</span>
+              <button type="button" class="btn-link detalhe-valor" id="empDetalheAbrirLeitor"></button>
+            </div>
+            <div class="detalhe-item">
+              <span class="detalhe-label">Exemplar</span>
+              <button type="button" class="btn-link detalhe-valor" id="empDetalheExemplar"></button>
+            </div>
+            <div class="detalhe-item" id="empDetalheMultaWrap" style="display: none">
+              <span class="detalhe-label">Multa</span>
+              <span class="detalhe-valor" id="empDetalheMulta"></span>
+            </div>
+            <!-- Multa atual (19/07/2026, feedback de design anterior): prévia
+                 da multa de um empréstimo ainda em atraso e sem multa
+                 gravada — sem isso, o bibliotecário precisava abrir a tela
+                 de Multas só pra saber o valor. É a mesma conta usada no
+                 modal de devolução (multa_prevista), não é um valor gravado. -->
+            <div class="detalhe-item" id="empDetalheMultaPrevistaWrap" style="display: none">
+              <span class="detalhe-label">Valor da multa atual</span>
+              <span class="detalhe-valor" id="empDetalheMultaPrevista"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-block leitor-timeline-bloco">
+          <h3 class="block-title">Linha do Tempo</h3>
+          <div id="empDetalheTimeline" class="leitor-timeline"></div>
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-danger btn-sm" onclick="fecharModal('modalDetalhesEmprestimo')">Fechar</button>
+          <!-- Empréstimo já concluído (19/07/2026, feedback de design): em vez
+               do botão de devolução simplesmente sumir sem nada no lugar,
+               oferece o próximo passo mais provável — um novo empréstimo pro
+               mesmo leitor. -->
+          <button class="btn btn-outline btn-sm" id="empDetalheBtnNovoEmprestimo" style="display: none">
+            Novo empréstimo
+          </button>
+          <button class="btn btn-success btn-sm" id="empDetalheBtnDevolver" style="display: none">
+            Registrar Devolução
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL — Detalhes da Auditoria -->
+    <div
+      id="modalDetalheAuditoria"
+      class="modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modalDetalheAuditoriaTitulo"
+    >
+      <div class="modal-box">
+        <h3 id="modalDetalheAuditoriaTitulo">Detalhes da Ação</h3>
+        <div class="detalhe-grid">
+          <div class="detalhe-item">
+            <span class="detalhe-label">Usuário</span>
+            <span class="detalhe-valor" id="audDetalheUsuario"></span>
+          </div>
+          <div class="detalhe-item">
+            <span class="detalhe-label">Data</span>
+            <span class="detalhe-valor" id="audDetalheData"></span>
+          </div>
+          <div class="detalhe-item">
+            <span class="detalhe-label">Entidade</span>
+            <span class="detalhe-valor" id="audDetalheEntidade"></span>
+          </div>
+          <div class="detalhe-item">
+            <span class="detalhe-label">Código</span>
+            <span class="detalhe-valor" id="audDetalheCodigo"></span>
+          </div>
+        </div>
+        <div id="audDetalheAlteracoes"></div>
+        <div class="modal-actions">
+          <button class="btn btn-danger btn-sm" onclick="fecharModal('modalDetalheAuditoria')">Fechar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL — Detalhes da Reserva (18/07/2026, feedback de design): mostra
+         a fila completa do livro (não cabia na tabela sem virar a mesma
+         "coluna de resumo" que o Achado 33 removeu de Exemplares) -->
+    <div
+      id="modalDetalheReserva"
+      class="modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modalDetalheReservaTitulo"
+    >
+      <div class="modal-box">
+        <h3 id="modalDetalheReservaTitulo">Detalhes da Reserva</h3>
+        <div class="detalhe-grid">
+          <div class="detalhe-item">
+            <span class="detalhe-label">Livro</span>
+            <span class="detalhe-valor" id="resDetalheLivro"></span>
+          </div>
+          <div class="detalhe-item">
+            <span class="detalhe-label">Leitor</span>
+            <span class="detalhe-valor" id="resDetalheLeitor"></span>
+          </div>
+          <div class="detalhe-item">
+            <span class="detalhe-label">Status</span>
+            <span class="detalhe-valor" id="resDetalheStatus"></span>
+          </div>
+          <div class="detalhe-item">
+            <span class="detalhe-label">Reserva em</span>
+            <span class="detalhe-valor" id="resDetalheData"></span>
+          </div>
+        </div>
+        <div class="dashboard-block" id="resDetalheFilaBloco" style="display: none">
+          <h4 class="livro-secao-titulo" id="resDetalheFilaTitulo">Fila completa</h4>
+          <div class="livro-reservas-lista" id="resDetalheFila"></div>
+        </div>
+        <div class="modal-actions" id="resDetalheAcoes">
+          <button class="btn btn-danger btn-sm" onclick="fecharModal('modalDetalheReserva')">Fechar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL — Detalhes do Perfil (18/07/2026, feedback de design): Criado
+         em/Criado por só aparecem aqui (não na tabela); as ações
+         (Alterar papel/Copiar e-mail/Reenviar convite/Remover) também
+         vivem no modal — mesma filosofia lista-mínima/detalhe-completo do
+         Achado 33, escolhida no lugar do menu "⋮" sugerido, para manter
+         consistência com o padrão do resto do Lume (nenhuma outra tela usa
+         menu de contexto; todas usam clique na linha → modal). -->
+    <div
+      id="modalDetalhePerfil"
+      class="modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modalDetalhePerfilTitulo"
+    >
+      <div class="modal-box">
+        <h3 id="modalDetalhePerfilTitulo">Detalhes do Perfil</h3>
+        <div class="detalhe-grid">
+          <div class="detalhe-item">
+            <span class="detalhe-label">Email</span>
+            <span class="detalhe-valor" id="pfDetalheEmail"></span>
+          </div>
+          <div class="detalhe-item">
+            <span class="detalhe-label">Papel</span>
+            <span class="detalhe-valor" id="pfDetalhePapel"></span>
+          </div>
+          <div class="detalhe-item">
+            <span class="detalhe-label">Status</span>
+            <span class="detalhe-valor" id="pfDetalheStatus"></span>
+          </div>
+          <div class="detalhe-item">
+            <span class="detalhe-label">Último acesso</span>
+            <span class="detalhe-valor" id="pfDetalheUltimoAcesso"></span>
+          </div>
+          <div class="detalhe-item">
+            <span class="detalhe-label">Criado em</span>
+            <span class="detalhe-valor" id="pfDetalheCriadoEm"></span>
+          </div>
+          <div class="detalhe-item">
+            <span class="detalhe-label">Criado por</span>
+            <span class="detalhe-valor" id="pfDetalheCriadoPor"></span>
+          </div>
+        </div>
+        <div class="modal-actions" id="pfDetalheAcoes">
+          <button class="btn btn-danger btn-sm" onclick="fecharModal('modalDetalhePerfil')">Fechar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tela de login -->
+    <div id="loginOverlay" class="login-screen active">
+      <div class="login-card">
+        <aside class="login-brand">
+          <img
+            class="login-vlogo"
+            src="assets/Logo lume vertical.png"
+            alt="Lume Literário — Sistema de gestão de biblioteca"
+          />
+        </aside>
+        <section class="login-form">
+          <h2 class="login-title">Bem-vindo de volta</h2>
+          <p class="login-desc">Acesse sua conta para continuar</p>
+          <div id="loginAlert" aria-live="polite"></div>
+
+          <label class="login-label" for="loginUser">Usuário</label>
+          <div class="login-field">
+            <svg
+              class="lf-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.7"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="8" r="3.5" />
+              <path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6" />
+            </svg>
+            <input type="text" id="loginUser" autocomplete="username" placeholder="usuário" />
+          </div>
+
+          <label class="login-label" for="loginPass">Senha</label>
+          <div class="login-field">
+            <svg
+              class="lf-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.7"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <rect x="5" y="11" width="14" height="9" rx="2" />
+              <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+            </svg>
+            <input
+              type="password"
+              id="loginPass"
+              autocomplete="current-password"
+              placeholder="••••••••"
+              onkeydown="if (event.key === 'Enter') login();"
+            />
+            <button type="button" class="lf-eye" id="btnEye" onclick="toggleLoginSenha()" aria-label="Mostrar senha">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+            </button>
+          </div>
+
+          <a
+            class="login-forgot"
+            href="#"
+            onclick="
+              esqueceuSenha();
+              return false;
+            "
+            >Esqueceu sua senha?</a
+          >
+
+          <button class="login-btn-primary" id="btnLogin" onclick="login()">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+              <path d="M10 17l5-5-5-5" />
+              <path d="M15 12H3" />
+            </svg>
+            Entrar
+          </button>
+        </section>
+      </div>
+    </div>
+
+    <!-- config -> util -> auth -> api -> repositories -> services -> ui -> app -->
+    <script src="js/config.js"></script>
+    <script src="js/util.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/repositories.js"></script>
+    <script src="js/services.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,23 @@
+{
+  "name": "lume-literario",
+  "version": "1.0.0",
+  "description": "Sistema de gestão de biblioteca — Supabase (PostgreSQL) + Edge Function + front-end em camadas.",
+  "type": "module",
+  "scripts": {
+    "lint": "eslint \"js/**/*.js\"",
+    "format": "prettier --write \"**/*.{js,css,md,json}\"",
+    "format:check": "prettier --check \"**/*.{js,css,md,json}\"",
+    "test": "node --test",
+    "build": "node scripts/build.mjs",
+    "check:functions": "deno check supabase/functions/api/index.ts"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "esbuild": "^0.23.1",
+    "eslint": "^9.9.0",
+    "prettier": "^3.3.0"
+  },
+  "allowScripts": {
+    "esbuild@0.23.1": true
+  }
+}
