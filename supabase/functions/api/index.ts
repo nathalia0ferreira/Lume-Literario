@@ -12,6 +12,12 @@
 // ============================================================
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 
+// Resultado das consultas de detalhe com relacionamentos aninhados. Sem os tipos
+// gerados do banco, o supabase-js não infere a forma desses selects, então o
+// tipo é declarado explicitamente (relações N:1 chegam como objeto, 1:N como lista).
+// deno-lint-ignore no-explicit-any
+type LinhaDetalhe = Record<string, any>;
+
 // CORS_ORIGIN é um secret do projeto Supabase (Edge Functions → Secrets), não algo
 // que o código consiga aplicar sozinho. Sem ele, o fallback "*" mantém a função
 // funcionando (a sessão/RBAC ainda protegem o acesso), mas loga um aviso visível
@@ -618,7 +624,7 @@ Deno.serve(async (req) => {
               'multa(multa_id, valor_dia, dias_atraso, valor_total, pago, data_pagamento, created_at)',
           )
           .eq('emprestimo_id', p.id)
-          .maybeSingle();
+          .maybeSingle<LinhaDetalhe>();
         if (ee) return reply({ ok: false, message: 'Erro ao carregar empréstimo: ' + ee.message });
         if (!emp) return reply({ ok: false, message: 'Empréstimo não encontrado.' });
 
@@ -851,7 +857,7 @@ Deno.serve(async (req) => {
               'livro_autor(autor:autor_id(nome_autor))',
           )
           .eq('livro_id', p.id)
-          .maybeSingle();
+          .maybeSingle<LinhaDetalhe>();
         if (el) return reply({ ok: false, message: 'Erro ao carregar livro: ' + el.message });
         if (!livro) return reply({ ok: false, message: 'Livro não encontrado.' });
 
@@ -1083,7 +1089,7 @@ Deno.serve(async (req) => {
               'livro:livro_id(titulo, isbn, ano_publicacao, categoria:categoria_id(nome_categoria), editora:editora_id(nome_editora))',
           )
           .eq('exemplar_id', p.id)
-          .maybeSingle();
+          .maybeSingle<LinhaDetalhe>();
         if (eex) return reply({ ok: false, message: 'Erro ao carregar exemplar: ' + eex.message });
         if (!ex) return reply({ ok: false, message: 'Exemplar não encontrado.' });
 
