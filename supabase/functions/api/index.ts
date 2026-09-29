@@ -160,7 +160,7 @@ const todayStr = () => new Date().toISOString().split('T')[0];
 const diffDias = (menor: string, maior: string): number =>
   Math.round((new Date(maior + 'T00:00:00Z').getTime() - new Date(menor + 'T00:00:00Z').getTime()) / 86400000);
 
-Deno.serve(async (req) => {
+const handler = async (req: Request): Promise<Response> => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS });
   if (req.method !== 'POST') return reply({ error: { message: 'Método não suportado.' } }, 405);
 
@@ -1915,4 +1915,26 @@ Deno.serve(async (req) => {
     console.error('api error:', action, msg);
     return reply({ error: { message: msg } }, 500);
   }
+};
+
+// CORS_ORIGIN aceita uma ou mais origens separadas por vírgula (ex.: o site publicado).
+// Endereços locais (localhost / 127.0.0.1) são sempre aceitos para desenvolvimento;
+// isso não abre acesso aos dados, porque toda chamada continua exigindo sessão válida
+// e passando pelo RBAC. A resposta devolve a origem que fez o pedido, se permitida.
+const ORIGENS = (CORS_ORIGIN || '')
+  .split(',')
+  .map((o) => o.trim())
+  .filter(Boolean);
+const ORIGEM_LOCAL = /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/;
+const origemPermitida = (origem: string | null): string => {
+  if (ORIGENS.length === 0) return '*';
+  if (origem && (ORIGENS.includes(origem) || ORIGEM_LOCAL.test(origem))) return origem;
+  return ORIGENS[0];
+};
+
+Deno.serve(async (req) => {
+  const res = await handler(req);
+  res.headers.set('Access-Control-Allow-Origin', origemPermitida(req.headers.get('Origin')));
+  res.headers.append('Vary', 'Origin');
+  return res;
 });
