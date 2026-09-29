@@ -1,0 +1,32 @@
+# Dependências
+node_modules/
+
+# Build de produção (gerado por `npm run build`)
+dist/
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editores
+.vscode/
+.idea/
+
+# Logs e temporários
+*.log
+*.tmp
+
+# Segredos (nunca versionar)
+.env
+.env.*
+!.env.example
+
+# ============================================================
+# Arquivos legados / de desenvolvimento — não publicar no repositório
+# (substituídos pela nova estrutura em camadas; arquivados em _legado/)
+# ============================================================
+_legado/
+
+# Arquivos temporários da Supabase CLI
+supabase/.temp/

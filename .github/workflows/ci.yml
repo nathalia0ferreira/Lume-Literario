@@ -1,0 +1,56 @@
+name: CI
+
+# Roda em todo push e em todo Pull Request para main/staging.
+# Porta de qualidade: lint + checagem de formatação + testes.
+on:
+  push:
+    branches: [main, staging]
+  pull_request:
+    branches: [main, staging]
+
+jobs:
+  qualidade:
+    name: Lint, formato e testes
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # necessário para o diff do passo "db/schema.sql sincronizado" abaixo
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Instalar dependências
+        run: npm install
+
+      - name: db/schema.sql sincronizado com as migrations (Achado 11 da auditoria 13/07/2026)
+        if: github.event_name == 'pull_request'
+        run: |
+          CHANGED=$(git diff --name-only "origin/${{ github.base_ref }}"...HEAD)
+          if echo "$CHANGED" | grep -q '^supabase/migrations/' && ! echo "$CHANGED" | grep -q '^db/schema\.sql$'; then
+            echo "::error::Este PR adiciona/altera supabase/migrations/ mas não atualiza db/schema.sql. Veja CONTRIBUTING.md, seção 'Banco de dados' — o schema.sql precisa refletir o estado final de cada migration."
+            exit 1
+          fi
+
+      - name: ESLint
+        run: npm run lint
+
+      - name: Prettier (checagem)
+        run: npm run format:check
+
+      - name: Testes (node --test)
+        run: npm test
+
+      - name: Build de produção (esbuild)
+        run: npm run build
+
+      - name: Configurar Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Type-check da Edge Function (deno check)
+        run: npm run check:functions

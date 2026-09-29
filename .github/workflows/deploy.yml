@@ -1,0 +1,51 @@
+name: Deploy
+
+# Esteira de entrega:
+#   push em `staging` -> publica no projeto Supabase de HOMOLOGAÇÃO
+#   push em `main`    -> publica no projeto Supabase de PRODUÇÃO
+#
+# Cada ambiente usa seus próprios segredos (GitHub > Settings > Environments):
+#   SUPABASE_ACCESS_TOKEN  (token pessoal do Supabase)
+#   SUPABASE_PROJECT_REF   (ref do projeto, ex.: rlaqpqnzvfmyryltsypx)
+#   SUPABASE_DB_PASSWORD   (senha do banco, para `db push`)
+on:
+  push:
+    branches: [main, staging]
+
+# Não roda deploy se a CI não passou primeiro (mesmo commit).
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Migrations + Edge Function
+    runs-on: ubuntu-latest
+    # Mapeia a branch para o Environment do GitHub (production/staging)
+    environment: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Instalar Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Vincular ao projeto
+        run: supabase link --project-ref "$SUPABASE_PROJECT_REF" --password "$SUPABASE_DB_PASSWORD"
+        env:
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+
+      - name: Aplicar migrations no banco
+        run: supabase db push --password "$SUPABASE_DB_PASSWORD"
+        env:
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+
+      - name: Publicar Edge Function "api"
+        run: supabase functions deploy api --no-verify-jwt --project-ref "$SUPABASE_PROJECT_REF"
+        env:
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}

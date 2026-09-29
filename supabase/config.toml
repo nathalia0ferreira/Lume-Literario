@@ -1,0 +1,7 @@
+# Configuração do projeto para a Supabase CLI.
+# O project_id é só um rótulo local; o alvo real do deploy vem do
+# `supabase link --project-ref` (definido por segredo no CI, por ambiente).
+project_id = "lume-literario"
+
+[functions.api]
+verify_jwt = false

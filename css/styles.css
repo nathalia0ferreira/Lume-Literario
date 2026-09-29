@@ -1,0 +1,3448 @@
+/* ============================================================
+   Lume Literário — Folha de estilo
+   Paleta: Creme #F0E7C4 · Vinho #810102 · Verde #034601 · Dourado #D4BF82
+   ============================================================ */
+:root {
+  --bg: #f0e7c4;
+  --primary: #810102;
+  --secondary: #034601;
+  --gold: #d4bf82;
+  --primary-dark: #5a0001;
+  --primary-deep: #3b0001;
+  --secondary-dark: #022a00;
+  --gold-dark: #5a3c00;
+  --gold-deep: #2e1a00;
+  --text: #1a0a00;
+  --text-muted: #5a3a30;
+  --surface: #faf5e8;
+  --white: #fff8ee;
+  --border: #d4bf82;
+  --sidebar-w: 220px;
+  --header-h: 72px;
+}
+
+/* RBAC */
+body.somente-leitura .form-card {
+  display: none;
+}
+body.somente-leitura #meuPerfil .form-card {
+  display: block;
+}
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  overflow-x: hidden;
+}
+
+body {
+  font-family: 'Crimson Pro', Georgia, serif;
+  background: var(--bg);
+  min-height: 100vh;
+  color: var(--text);
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
+  max-width: 100%;
+  background-image:
+    radial-gradient(ellipse 120% 60% at 80% 10%, rgba(129, 1, 2, 0.04) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 80% at 10% 90%, rgba(3, 70, 1, 0.03) 0%, transparent 70%);
+}
+
+.container {
+  max-width: 1440px;
+  margin: 0 auto;
+  background: var(--white);
+  border: 1px solid var(--gold);
+  box-shadow:
+    0 8px 48px rgba(129, 1, 2, 0.09),
+    0 2px 8px rgba(129, 1, 2, 0.04);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== HEADER ===== */
+header {
+  background: var(--primary);
+  color: var(--bg);
+  padding: 0 24px;
+  height: var(--header-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 3px solid var(--gold);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  flex-shrink: 0;
+}
+header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 18px,
+    rgba(212, 191, 130, 0.05) 18px,
+    rgba(212, 191, 130, 0.05) 19px
+  );
+  pointer-events: none;
+}
+.header-left {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  flex: 1;
+}
+.header-title {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.sidebar-toggle {
+  background: transparent;
+  border: none;
+  color: rgba(240, 231, 196, 0.7);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  display: flex;
+  transition:
+    background 0.2s,
+    color 0.2s;
+}
+.sidebar-toggle:hover {
+  background: rgba(240, 231, 196, 0.12);
+  color: var(--bg);
+}
+.sidebar-toggle svg {
+  width: 20px;
+  height: 20px;
+}
+
+.header-logo {
+  height: 44px;
+  width: auto;
+  flex-shrink: 0;
+  filter: drop-shadow(0 2px 4px rgba(129, 1, 2, 0.5));
+}
+.header-title {
+  display: flex;
+  flex-direction: column;
+}
+header h1 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(16px, 2.5vw, 24px);
+  font-weight: 900;
+  letter-spacing: -0.2px;
+  line-height: 1;
+  color: var(--bg);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+header h1 span {
+  color: var(--gold);
+}
+header > .header-left > .header-title > p {
+  font-size: 11px;
+  opacity: 0.65;
+  margin-top: 3px;
+  letter-spacing: 0.3px;
+  font-weight: 400;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+/* Header right */
+.header-right {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.db-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: rgba(240, 231, 196, 0.6);
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.db-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(240, 231, 196, 0.3);
+  transition: background 0.4s;
+}
+.db-dot.online {
+  background: var(--gold);
+}
+
+/* User menu */
+.user-menu {
+  position: relative;
+}
+.user-menu-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(240, 231, 196, 0.1);
+  border: 1px solid rgba(240, 231, 196, 0.22);
+  border-radius: 10px;
+  padding: 6px 12px 6px 6px;
+  cursor: pointer;
+  color: var(--bg);
+  transition:
+    background 0.2s,
+    border-color 0.2s;
+}
+.user-menu-btn:hover {
+  background: rgba(240, 231, 196, 0.18);
+  border-color: rgba(240, 231, 196, 0.42);
+}
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--gold);
+  color: var(--primary);
+  font-weight: 700;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.user-info {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  line-height: 1.2;
+}
+.user-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--bg);
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.user-role {
+  font-size: 10px;
+  color: rgba(240, 231, 196, 0.6);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.chevron-icon {
+  width: 14px;
+  height: 14px;
+  opacity: 0.65;
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+.user-menu-btn[aria-expanded='true'] .chevron-icon {
+  transform: rotate(180deg);
+}
+
+.user-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 160px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(129, 1, 2, 0.12);
+  z-index: 200;
+  overflow: hidden;
+}
+.user-dropdown.open {
+  display: block;
+}
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.dropdown-item svg {
+  width: 15px;
+  height: 15px;
+  color: var(--text-muted);
+}
+.dropdown-item:hover {
+  background: rgba(129, 1, 2, 0.06);
+  color: var(--primary);
+}
+.dropdown-item:hover svg {
+  color: var(--primary);
+}
+
+/* ===== APP BODY ===== */
+.app-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  width: var(--sidebar-w);
+  flex-shrink: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  transition:
+    width 0.25s,
+    opacity 0.25s;
+}
+.sidebar.collapsed {
+  width: 0;
+  overflow: hidden;
+  opacity: 0;
+}
+
+.nav-group {
+  padding-bottom: 8px;
+}
+.nav-group + .nav-group {
+  border-top: 1px solid rgba(212, 191, 130, 0.25);
+  padding-top: 8px;
+}
+.nav-group-label {
+  display: block;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 16px 20px 6px;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 20px;
+  border: none;
+  border-left: 4px solid transparent;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.18s;
+  white-space: nowrap;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.nav-item svg {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+}
+.nav-item:hover {
+  color: var(--primary);
+  background: rgba(129, 1, 2, 0.04);
+}
+.nav-item.active {
+  color: var(--primary);
+  background: rgba(129, 1, 2, 0.06);
+  border-left-color: var(--gold);
+  font-weight: 600;
+}
+.nav-item:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+}
+
+/* ===== MAIN CONTENT ===== */
+.main-content {
+  flex: 1;
+  min-width: 0;
+  overflow-x: hidden;
+  padding: 32px 36px 56px;
+}
+
+/* ===== SECTIONS ===== */
+.section {
+  display: none;
+}
+.section.active {
+  display: block;
+}
+
+/* Page header */
+.page-header {
+  margin-bottom: 28px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.page-header > div {
+  min-width: 0;
+}
+h2 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(20px, 2.5vw, 26px);
+  font-weight: 700;
+  color: var(--primary);
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--gold);
+  letter-spacing: -0.2px;
+}
+.page-subtitle {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+#dashboardGreeting {
+  font-style: italic;
+}
+h3 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--secondary);
+  margin-bottom: 14px;
+  letter-spacing: -0.1px;
+}
+
+/* ===== OVERDUE BANNER ===== */
+.overdue-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(129, 1, 2, 0.07);
+  border: 1px solid rgba(129, 1, 2, 0.22);
+  border-left: 4px solid var(--primary);
+  border-radius: 10px;
+  padding: 12px 18px;
+  margin-bottom: 28px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary);
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.overdue-banner svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* ===== KPI CARDS — 6 variantes cromáticas ===== */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.stat-card {
+  background: var(--primary);
+  color: var(--bg);
+  border-radius: 14px;
+  padding: 22px 22px 20px;
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(129, 1, 2, 0.22);
+}
+.stat-card::after {
+  content: '';
+  position: absolute;
+  bottom: -16px;
+  right: -16px;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(240, 231, 196, 0.1);
+  pointer-events: none;
+}
+.stat-card.green {
+  background: var(--secondary);
+}
+.stat-card.gold {
+  background: var(--gold-dark);
+}
+.stat-card.teal {
+  background: var(--primary-dark);
+}
+.stat-card.slate {
+  background: var(--secondary-dark);
+}
+.stat-card.amber {
+  background: var(--gold-deep);
+}
+
+.stat-card .kpi-value {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 38px;
+  font-weight: 900;
+  color: var(--bg);
+  line-height: 1;
+  margin-bottom: 6px;
+  letter-spacing: -1px;
+}
+.stat-card .kpi-label {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(240, 231, 196, 0.8);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+.stat-card .kpi-sub {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px;
+  color: rgba(240, 231, 196, 0.6);
+  margin-top: 6px;
+  font-weight: 400;
+}
+
+/* ===== CHARTS ===== */
+.charts-row {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+.chart-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 22px 24px;
+  min-width: 0;
+  overflow: hidden;
+}
+.chart-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+.chart-wrap-donut {
+  max-width: 180px;
+  margin: 0 auto 12px;
+}
+.chart-wrap-bar {
+  height: 175px;
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+}
+.chart-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.chart-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.chart-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ===== DASHBOARD BLOCKS ===== */
+.dashboard-block {
+  margin-bottom: 28px;
+}
+.block-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--secondary);
+  margin-bottom: 16px;
+}
+.block-title svg {
+  width: 17px;
+  height: 17px;
+}
+
+/* ===== ACTIVITY FEED ===== */
+.activity-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.activity-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: background 0.15s;
+}
+.activity-item:hover {
+  background: rgba(212, 191, 130, 0.12);
+}
+.activity-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--gold);
+  flex-shrink: 0;
+}
+.activity-text {
+  color: var(--text);
+  flex: 1;
+  font-size: 14px;
+}
+.activity-meta {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* ===== STATUS INLINE (tabela de atrasos) ===== */
+.status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 5px;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+.status-dot.red {
+  background: var(--primary);
+}
+.status-dot.orange {
+  background: var(--gold);
+}
+.status-muito-atrasado {
+  display: inline-flex;
+  align-items: center;
+  color: var(--primary);
+  font-weight: 700;
+  font-size: 12px;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.status-atrasado {
+  display: inline-flex;
+  align-items: center;
+  color: var(--gold-dark);
+  font-weight: 700;
+  font-size: 12px;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+/* ===== FORMS ===== */
+.form-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 28px;
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+label {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+input,
+select,
+textarea {
+  padding: 10px 13px;
+  border: 1.5px solid var(--gold);
+  border-radius: 8px;
+  font-size: 15px;
+  font-family: 'Crimson Pro', Georgia, serif;
+  background: var(--white);
+  color: var(--text);
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(129, 1, 2, 0.08);
+}
+small {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+.text-muted {
+  color: var(--text-muted);
+}
+.status-select {
+  font-size: 13px;
+  padding: 5px 9px;
+  border-radius: 6px;
+}
+
+/* ===== BUTTONS ===== */
+.btn {
+  padding: 10px 22px;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+.btn-primary {
+  background: var(--primary);
+  color: var(--bg);
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(129, 1, 2, 0.26);
+}
+.btn-success {
+  background: var(--secondary);
+  color: var(--bg);
+}
+.btn-success:hover:not(:disabled) {
+  background: var(--secondary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(3, 70, 1, 0.22);
+}
+.btn-danger {
+  background: transparent;
+  color: var(--primary);
+  border: 2px solid var(--primary);
+}
+.btn-danger:hover:not(:disabled) {
+  background: rgba(129, 1, 2, 0.07);
+}
+.btn-sm {
+  padding: 5px 12px;
+  font-size: 12px;
+  border-radius: 6px;
+}
+
+/* ===== TABLES ===== */
+.table-wrap {
+  overflow-x: auto;
+  margin-top: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+thead {
+  background: var(--primary);
+  color: var(--bg);
+}
+th {
+  padding: 12px 16px;
+  text-align: left;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+td {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(212, 191, 130, 0.28);
+  color: var(--text);
+  vertical-align: middle;
+  font-size: 14px;
+  /* Sem isso, o line-height: 1.6 do body (pensado para texto corrido)
+     era herdado nas células — deixava a linha de e-mail/telefone da
+     coluna Contato "solta" bem acima do centro da linha, desalinhada
+     com Nome/CPF/Status/Ações ao lado. */
+  line-height: 1.3;
+}
+tbody tr:last-child td {
+  border-bottom: none;
+}
+tbody tr:hover {
+  background: rgba(212, 191, 130, 0.1);
+}
+
+/* ===== BADGES ===== */
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+.badge-success {
+  background: rgba(3, 70, 1, 0.1);
+  color: var(--secondary);
+  border: 1px solid rgba(3, 70, 1, 0.22);
+}
+.badge-danger {
+  background: rgba(129, 1, 2, 0.1);
+  color: var(--primary);
+  border: 1px solid rgba(129, 1, 2, 0.22);
+}
+.badge-warning {
+  background: rgba(212, 191, 130, 0.18);
+  color: var(--gold-dark);
+  border: 1px solid rgba(212, 191, 130, 0.55);
+}
+/* Vinho sólido (preenchido, ao contrário do vinho claro de .badge-danger) —
+   reaproveitada desde 17/07/2026 para o status calculado "Atrasado" de
+   Exemplares (exemplar.status continua "Emprestado" no banco; ver
+   situacaoExemplarBadge em js/ui.js). Distinta de .badge-danger (Baixado, um
+   estado encerrado) de propósito: "Atrasado" pede ação agora. */
+.badge-overdue {
+  background: var(--primary);
+  color: var(--bg);
+  border: 1px solid var(--primary-dark);
+}
+/* Cinza neutro — estados "encerrados"/sem ação pendente (exemplar em
+   Manutenção, empréstimo Devolvido) que não devem competir visualmente com
+   os badges de cor (verde/dourado/vinho), que sinalizam algo que pede
+   atenção. Baixado usa .badge-danger (vinho), não este — decisão explícita
+   revertida em 16/07/2026 (ver Achado 27 da auditoria). */
+.badge-neutro {
+  background: rgba(90, 58, 48, 0.08);
+  color: var(--text-muted);
+  border: 1px solid rgba(90, 58, 48, 0.18);
+}
+.badge-info {
+  background: rgba(240, 231, 196, 0.5);
+  color: var(--text);
+  border: 1px solid rgba(212, 191, 130, 0.4);
+}
+
+/* ===== ALERTS ===== */
+.alert {
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.alert-success {
+  background: rgba(3, 70, 1, 0.07);
+  color: var(--secondary);
+  border-left: 4px solid var(--secondary);
+}
+.alert-error {
+  background: rgba(129, 1, 2, 0.07);
+  color: var(--primary);
+  border-left: 4px solid var(--primary);
+}
+
+/* ===== SEARCH ===== */
+.search-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.search-row input {
+  max-width: 340px;
+  width: 100%;
+  min-width: 0;
+}
+.search-hint {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* ===== MISC ===== */
+.empty-state {
+  text-align: center;
+  padding: 36px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+.loading {
+  text-align: center;
+  padding: 28px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+.note-row td {
+  font-size: 12px;
+  color: var(--text-muted);
+  padding: 8px 16px;
+}
+/* Propositalmente SEM display:flex aqui: aplicar flex direto na <td>
+   tira a célula do modelo de tabela e quebra o vertical-align: middle
+   que alinha esta coluna com as demais da mesma linha (Nome/Contato/
+   CPF/Status) — o botão de ações (.action-menu-wrap) já é inline-flex
+   por conta própria, então a <td> não precisa ser flex. */
+.td-actions {
+  white-space: nowrap;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ===== PAGINATION ===== */
+.pagination-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+.pagination-wrap span {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  color: var(--text-muted);
+  padding: 0 4px;
+}
+.btn-page {
+  padding: 4px 10px;
+  border: 1.5px solid var(--gold);
+  border-radius: 6px;
+  background: var(--white);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+  color: var(--text);
+  transition: all 0.2s;
+}
+.btn-page:hover {
+  background: rgba(129, 1, 2, 0.07);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.btn-page.active-page {
+  background: var(--primary);
+  color: var(--bg);
+  border-color: var(--primary);
+}
+
+/* ===== MODAIS ===== */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(59, 0, 1, 0.52);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.active {
+  display: flex;
+}
+.modal-box {
+  background: var(--white);
+  border: 1px solid var(--gold);
+  border-radius: 14px;
+  padding: 28px;
+  max-width: 640px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(129, 1, 2, 0.2);
+}
+
+/* Barra de rolagem discreta, na cor da identidade do projeto, em vez da
+   barra grossa/cinza padrão do navegador — usada em qualquer área rolável
+   dentro de modais (o próprio modal e a Linha do Tempo do leitor). */
+.modal-box,
+.leitor-timeline {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(212, 191, 130, 0.6) transparent;
+}
+.modal-box::-webkit-scrollbar,
+.leitor-timeline::-webkit-scrollbar {
+  width: 6px;
+}
+.modal-box::-webkit-scrollbar-track,
+.leitor-timeline::-webkit-scrollbar-track {
+  background: transparent;
+}
+.modal-box::-webkit-scrollbar-thumb,
+.leitor-timeline::-webkit-scrollbar-thumb {
+  background: rgba(212, 191, 130, 0.6);
+  border-radius: 10px;
+}
+.modal-box::-webkit-scrollbar-thumb:hover,
+.leitor-timeline::-webkit-scrollbar-thumb:hover {
+  background: rgba(212, 191, 130, 0.9);
+}
+.modal-box h3 {
+  margin-bottom: 20px;
+}
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+/* ===== LOGIN ===== */
+#loginOverlay.login-screen {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: var(--bg) url('../assets/fundo login 1.png') center center / cover no-repeat;
+  overflow: auto;
+}
+#loginOverlay.login-screen.active {
+  display: flex;
+}
+
+.login-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  max-width: 900px;
+  width: 100%;
+  background: var(--white);
+  border: 1px solid rgba(212, 191, 130, 0.38);
+  border-radius: 18px;
+  box-shadow:
+    0 24px 64px rgba(129, 1, 2, 0.14),
+    0 4px 16px rgba(129, 1, 2, 0.05);
+  overflow: hidden;
+}
+.login-brand {
+  padding: 46px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  border-right: 1px solid rgba(212, 191, 130, 0.3);
+  background: rgba(240, 231, 196, 0.25);
+}
+.login-vlogo {
+  width: 220px;
+  max-width: 84%;
+  height: auto;
+}
+.login-form {
+  padding: 44px;
+  display: flex;
+  flex-direction: column;
+}
+
+.login-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--primary);
+  margin: 0;
+  border: none;
+  padding: 0;
+  letter-spacing: -0.2px;
+}
+.login-desc {
+  color: var(--text-muted);
+  font-size: 14px;
+  margin: 6px 0 24px;
+}
+.login-label {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 7px;
+  display: block;
+}
+.login-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1.5px solid rgba(212, 191, 130, 0.55);
+  border-radius: 10px;
+  background: var(--white);
+  padding: 0 12px;
+  margin-bottom: 16px;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+.login-field:focus-within {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(129, 1, 2, 0.08);
+}
+.login-field .lf-icon {
+  width: 20px;
+  height: 20px;
+  color: rgba(212, 191, 130, 0.85);
+  flex-shrink: 0;
+}
+.login-field input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 13px 0;
+  font-size: 15px;
+  font-family: 'Crimson Pro', Georgia, serif;
+  color: var(--text);
+}
+.login-field input:focus {
+  border: none;
+  box-shadow: none;
+  outline: none;
+}
+.lf-eye {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: rgba(212, 191, 130, 0.85);
+  display: flex;
+  padding: 4px;
+}
+.lf-eye svg {
+  width: 20px;
+  height: 20px;
+}
+.lf-eye:hover {
+  color: var(--primary);
+}
+
+.login-forgot {
+  align-self: flex-end;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gold-dark);
+  text-decoration: none;
+  margin: -4px 0 20px;
+}
+.login-forgot:hover {
+  text-decoration: underline;
+  color: var(--primary);
+}
+
+.login-btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  border: none;
+  border-radius: 10px;
+  background: var(--primary);
+  color: var(--bg);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 15px;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    box-shadow 0.2s;
+  letter-spacing: 0.2px;
+}
+.login-btn-primary:hover {
+  background: var(--primary-dark);
+  box-shadow: 0 6px 18px rgba(129, 1, 2, 0.28);
+}
+.login-btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.login-btn-primary svg {
+  width: 20px;
+  height: 20px;
+}
+#loginAlert {
+  margin-bottom: 8px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  .sidebar {
+    position: fixed;
+    top: var(--header-h);
+    left: 0;
+    height: calc(100vh - var(--header-h));
+    z-index: 90;
+    box-shadow: 4px 0 16px rgba(129, 1, 2, 0.1);
+    width: var(--sidebar-w);
+  }
+  .sidebar.collapsed {
+    width: 0;
+    box-shadow: none;
+    opacity: 0;
+  }
+  /* Sidebar sai do fluxo → main-content ocupa largura total */
+  .app-body {
+    overflow-x: hidden;
+  }
+  .main-content {
+    padding: 20px 18px 40px;
+    width: 100%;
+    min-width: 0;
+  }
+  .charts-row {
+    grid-template-columns: 1fr;
+  }
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+  header {
+    padding: 0 16px;
+  }
+  .db-indicator {
+    display: none;
+  }
+  .user-info {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  :root {
+    --header-h: 60px;
+  }
+  .container {
+    border-left: none;
+    border-right: none;
+  }
+  .main-content {
+    padding: 16px 12px 36px;
+  }
+  .stats {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .stat-card .kpi-value {
+    font-size: 30px;
+  }
+  .search-row input {
+    max-width: 100%;
+  }
+  .search-row {
+    gap: 8px;
+  }
+
+  /* Tabelas em card-list */
+  .table-wrap {
+    border: none;
+    margin-top: 0;
+    overflow-x: visible;
+  }
+  table,
+  thead,
+  tbody,
+  th,
+  td,
+  tr {
+    display: block;
+  }
+  thead {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+  tbody tr {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 12px;
+    background: var(--white);
+    overflow: hidden;
+  }
+  td {
+    border-bottom: 1px solid rgba(212, 191, 130, 0.22);
+    padding: 9px 12px 9px 44%;
+    position: relative;
+    min-height: 38px;
+    word-break: break-word;
+  }
+  td:last-child {
+    border-bottom: none;
+  }
+  td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 10px;
+    width: 40%;
+    padding-right: 8px;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .note-row td,
+  .td-actions {
+    padding: 8px 12px;
+  }
+  .note-row td::before,
+  .td-actions::before {
+    display: none;
+  }
+  .btn-sm {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+  /* Login */
+  .login-card {
+    grid-template-columns: 1fr;
+  }
+  .login-brand {
+    display: none;
+  }
+  .login-form {
+    padding: 28px 20px;
+  }
+
+  /* KPIs de usuários: 2 colunas em vez de 3 */
+  .usuarios-kpis {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  /* Filtros quebram para nova linha */
+  .filter-group {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  .filter-group select {
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* Modais: padding reduzido */
+  .modal-box {
+    padding: 20px 14px;
+  }
+  .modal-actions {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .modal-actions .btn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  /* Page header: button ocupa linha própria */
+  .page-header {
+    gap: 8px;
+  }
+  .page-header .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Perfil */
+  .perfil-avatar-row {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  /* Charts */
+  .charts-row {
+    gap: 12px;
+  }
+  .chart-wrap-bar {
+    height: 140px;
+  }
+  .chart-card {
+    padding: 14px 12px;
+  }
+
+  /* Form cards */
+  .form-card {
+    padding: 16px 14px;
+  }
+
+  /* Overdue banner */
+  .overdue-banner {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  /* Usuarios KPI cards menores */
+  .usuarios-kpi-num {
+    font-size: 24px;
+  }
+  .usuarios-kpi-card {
+    padding: 12px 14px;
+  }
+
+  /* Stat cards */
+  .stat-card {
+    padding: 16px 14px 14px;
+  }
+
+  /* Livros toolbar mobile */
+  .livros-filters {
+    gap: 6px;
+  }
+  .livros-filters select {
+    font-size: 12px;
+    padding: 7px 8px;
+  }
+
+  /* Chip selector mobile */
+  .chip-select-input {
+    min-width: 80px;
+  }
+  .chip-select-dropdown {
+    max-height: 160px;
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1200px) {
+  :root {
+    --sidebar-w: 200px;
+  }
+  .main-content {
+    padding: 28px 26px 48px;
+  }
+  .charts-row {
+    grid-template-columns: 1fr 1.5fr;
+  }
+}
+
+/* ===== TELAS MUITO PEQUENAS (≤ 400px) ===== */
+@media (max-width: 400px) {
+  .usuarios-kpis {
+    grid-template-columns: 1fr;
+  }
+  .stats {
+    grid-template-columns: 1fr;
+  }
+  .stat-card .kpi-value {
+    font-size: 36px;
+  }
+  .header-logo {
+    height: 34px;
+    width: 34px;
+  }
+  header h1 {
+    font-size: 15px;
+  }
+  .main-content {
+    padding: 12px 10px 28px;
+  }
+  .form-card {
+    padding: 14px 10px;
+  }
+  .modal-overlay {
+    padding: 12px;
+  }
+  .modal-box {
+    padding: 16px 12px;
+  }
+  td {
+    padding: 9px 10px 9px 42%;
+  }
+  td::before {
+    width: 38%;
+  }
+}
+
+/* ===== DROPDOWN MELHORADO ===== */
+.dropdown-divider {
+  height: 1px;
+  background: rgba(212, 191, 130, 0.35);
+  margin: 4px 12px;
+}
+.dropdown-item-danger {
+  color: var(--primary) !important;
+}
+.dropdown-item-danger svg {
+  color: var(--primary) !important;
+}
+.dropdown-item-danger:hover {
+  background: rgba(129, 1, 2, 0.08) !important;
+}
+
+/* ===== MEU PERFIL ===== */
+.perfil-layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 24px;
+  align-items: start;
+}
+.perfil-main {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.perfil-aside {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.perfil-avatar-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 24px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid rgba(212, 191, 130, 0.35);
+}
+.perfil-avatar-large {
+  width: 72px;
+  height: 72px;
+  border-radius: 14px;
+  background: var(--primary);
+  color: var(--bg);
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 30px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(129, 1, 2, 0.22);
+}
+
+.input-readonly {
+  background: rgba(240, 231, 196, 0.55) !important;
+  color: var(--text-muted) !important;
+  cursor: not-allowed;
+}
+
+.perfil-info-list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+}
+.perfil-info-item {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(212, 191, 130, 0.28);
+}
+.perfil-info-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.perfil-info-item dt {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: var(--text-muted);
+  margin-bottom: 5px;
+}
+.perfil-info-item dd {
+  font-size: 15px;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.radio-group {
+  display: flex;
+  gap: 20px;
+  margin-top: 8px;
+}
+.radio-option {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  color: var(--text);
+}
+.radio-option input {
+  margin: 0;
+  accent-color: var(--primary);
+}
+.radio-option input:disabled + span {
+  color: var(--text-muted);
+}
+
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+.checkbox-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  color: var(--text);
+}
+.checkbox-option input {
+  margin: 0;
+  accent-color: var(--primary);
+}
+.checkbox-option input:disabled + span {
+  color: var(--text-muted);
+}
+
+@media (max-width: 900px) {
+  .perfil-layout {
+    grid-template-columns: 1fr;
+  }
+  .usuarios-kpis {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .usuarios-search-row input {
+    min-width: 160px;
+  }
+}
+
+/* ===== SEÇÃO USUÁRIOS ===== */
+.usuarios-kpis {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 22px;
+}
+.usuarios-kpi-card {
+  background: var(--surface);
+  border: 1.5px solid rgba(212, 191, 130, 0.5);
+  border-radius: 12px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.usuarios-kpi-num {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 30px;
+  font-weight: 900;
+  color: var(--text);
+  line-height: 1;
+}
+.usuarios-kpi-label {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-muted);
+}
+.usuarios-kpi-verde .usuarios-kpi-num {
+  color: var(--secondary);
+}
+.usuarios-kpi-muted .usuarios-kpi-num {
+  color: var(--text-muted);
+}
+/* Variante para KPI de texto (ex.: "Livro mais reservado" na tela de
+   Reservas, 17/07/2026) — os demais cartões mostram só um número, este
+   mostra um título de livro; a tipografia grande/serifada padrão fica
+   desproporcional para uma string mais longa. */
+.usuarios-kpi-num.usuarios-kpi-num-texto {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+/* Segunda linha do KPI de texto (18/07/2026, feedback de design) — "Livro
+   mais reservado" ganhou um cartão com título + contagem separados em vez
+   de "Título (N)" numa linha só, mais legível. */
+.usuarios-kpi-subtexto {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+
+/* KPIs clicáveis (18/07/2026, feedback de design) — "Reservas ativas" e
+   "Atendidas" viraram <button> para filtrar a tabela abaixo por status.
+   Reset dos estilos padrão de botão para continuar parecendo um cartão. */
+.usuarios-kpi-clicavel {
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  transition:
+    box-shadow 0.15s ease,
+    border-color 0.15s ease;
+}
+.usuarios-kpi-clicavel:hover {
+  border-color: var(--gold);
+}
+.usuarios-kpi-clicavel:focus-visible {
+  outline: 2px solid var(--gold-dark);
+  outline-offset: 2px;
+}
+.usuarios-kpi-selecionado {
+  border-color: var(--gold-dark) !important;
+  box-shadow: 0 0 0 1.5px var(--gold-dark);
+}
+
+.usuarios-search-row {
+  flex-wrap: wrap;
+}
+.usuarios-search-row input {
+  flex: 1;
+  min-width: 0;
+  max-width: none;
+}
+
+.filter-group {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.filter-group select {
+  font-size: 13px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1.5px solid rgba(212, 191, 130, 0.55);
+  background: var(--white);
+  color: var(--text);
+  font-family: 'Inter', system-ui, sans-serif;
+  cursor: pointer;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.section-hint {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+/* Icon action buttons */
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1.5px solid rgba(212, 191, 130, 0.45);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s,
+    border-color 0.15s;
+  flex-shrink: 0;
+}
+.btn-icon svg {
+  width: 15px;
+  height: 15px;
+}
+.btn-icon:hover {
+  background: rgba(129, 1, 2, 0.06);
+  color: var(--primary);
+  border-color: rgba(129, 1, 2, 0.3);
+}
+
+/* Three-dots dropdown */
+.action-menu-wrap {
+  position: relative;
+  display: inline-flex;
+}
+.action-menu {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  background: var(--white);
+  border: 1px solid rgba(212, 191, 130, 0.65);
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(129, 1, 2, 0.1);
+  z-index: 60;
+  min-width: 134px;
+  overflow: hidden;
+}
+.action-menu.open {
+  display: block;
+}
+.action-menu button {
+  display: block;
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  background: transparent;
+  text-align: left;
+  font-size: 13.5px;
+  font-family: 'Inter', system-ui, sans-serif;
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.action-menu button:hover {
+  background: rgba(129, 1, 2, 0.06);
+  color: var(--primary);
+}
+.action-menu-item--danger {
+  color: var(--primary) !important;
+}
+.action-menu-item--danger:hover {
+  background: rgba(129, 1, 2, 0.08) !important;
+}
+.action-menu-item--success {
+  color: var(--secondary) !important;
+}
+.action-menu-item--success:hover {
+  background: rgba(3, 70, 1, 0.08) !important;
+}
+/* Item desabilitado (16/07/2026) — ex.: "Excluir" enquanto o exemplar está
+   emprestado. Continua visível (explica por que a ação não está disponível
+   via title=), só não reage a clique/hover. */
+.action-menu button:disabled {
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+.action-menu button:disabled:hover {
+  background: transparent;
+  color: var(--text-muted);
+}
+
+/* Contact cell (email + phone stacked) */
+.contact-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.contact-cell span:first-child {
+  font-size: 14px;
+  color: var(--text);
+}
+.contact-cell span:last-child {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ===== CHIP SELECT ===== */
+.chip-select {
+  border: 1.5px solid var(--gold);
+  border-radius: 8px;
+  background: var(--white);
+  padding: 6px 10px;
+  position: relative;
+  min-height: 44px;
+  cursor: text;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+.chip-select:focus-within {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(129, 1, 2, 0.08);
+}
+.chip-select-inner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+.chip-select-chips {
+  display: contents;
+}
+.chip-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(129, 1, 2, 0.08);
+  border: 1px solid rgba(129, 1, 2, 0.18);
+  border-radius: 20px;
+  padding: 3px 10px 3px 12px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  color: var(--primary);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.chip-tag-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--primary);
+  opacity: 0.6;
+  padding: 0 2px;
+  font-size: 16px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  transition: opacity 0.15s;
+}
+.chip-tag-remove:hover {
+  opacity: 1;
+}
+.chip-select-input {
+  border: none !important;
+  outline: none !important;
+  padding: 4px 0 !important;
+  font-size: 14px;
+  min-width: 120px;
+  flex: 1;
+  background: transparent;
+  color: var(--text);
+  font-family: 'Crimson Pro', Georgia, serif;
+  box-shadow: none !important;
+}
+.chip-select-dropdown {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 4px);
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 6px 24px rgba(129, 1, 2, 0.12);
+  z-index: 150;
+  max-height: 200px;
+  overflow-y: auto;
+}
+.chip-option {
+  padding: 9px 14px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: background 0.12s;
+  font-family: 'Crimson Pro', Georgia, serif;
+}
+.chip-option:hover {
+  background: rgba(129, 1, 2, 0.05);
+}
+.chip-option.selected {
+  color: var(--primary);
+  background: rgba(129, 1, 2, 0.04);
+  font-weight: 600;
+}
+.chip-check {
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid rgba(212, 191, 130, 0.7);
+  border-radius: 4px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+.chip-option.selected .chip-check {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+.chip-empty {
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+/* Linha "+ Criar" / "+ Nova Categoria" etc. no fim do dropdown do
+   chip-select (autor) e do combo-select (categoria/editora) — criação
+   rápida de dados auxiliares (17/07/2026), pedido para nunca obrigar o
+   bibliotecário a sair do cadastro do livro. */
+.chip-option-divider {
+  border-top: 1px solid var(--border);
+  margin: 2px 0;
+}
+.chip-option-criar {
+  color: var(--primary);
+  font-weight: 600;
+}
+.chip-option-criar:hover {
+  background: rgba(129, 1, 2, 0.06);
+}
+
+/* ===== COMBO SELECT (Categoria/Editora — seleção única e pesquisável) =====
+   Visualmente idêntico ao chip-select, mas sem os "chips" removíveis: o
+   campo mostra só o nome selecionado como texto. O dropdown/opções reutiliza
+   as mesmas classes do chip-select (.chip-select-dropdown/.chip-option/
+   .chip-empty) — só o invólucro é diferente. */
+.combo-select {
+  border: 1.5px solid var(--gold);
+  border-radius: 8px;
+  background: var(--white);
+  position: relative;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+.combo-select:focus-within {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(129, 1, 2, 0.08);
+}
+.combo-select-input {
+  border: none !important;
+  outline: none !important;
+  width: 100%;
+  padding: 11px 12px !important;
+  font-size: 14px;
+  background: transparent;
+  color: var(--text);
+  font-family: 'Crimson Pro', Georgia, serif;
+  box-shadow: none !important;
+}
+
+/* Variante compacta de .modal-box para os mini-modais de criação rápida
+   (Nova Categoria/Nova Editora/Novo Autor) — não precisam da largura de um
+   modal de cadastro completo. */
+.modal-box-sm {
+  max-width: 420px;
+}
+
+/* ===== LIVROS — toolbar, filtros e ISBN ===== */
+.livros-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.livros-filters {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.livros-filters select {
+  flex: 1;
+  min-width: 140px;
+  cursor: pointer;
+}
+/* Campos de data "Personalizado" (filtro Período da Auditoria) — mesmo
+   comportamento flex/min-width dos selects vizinhos na barra de filtros. */
+.livros-filters input[type='date'] {
+  flex: 1;
+  min-width: 150px;
+  cursor: pointer;
+}
+.livros-search-row {
+  margin-bottom: 0;
+}
+.livros-search-row input {
+  flex: 1;
+  max-width: none;
+}
+.isbn-muted {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.2px;
+}
+
+/* ===== CUSTOM SELECT (filtros livros) ===== */
+.csel-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 140px;
+}
+.csel-trigger {
+  width: 100%;
+  padding: 10px 13px;
+  border: 1.5px solid var(--gold);
+  border-radius: 8px;
+  background: var(--white);
+  color: var(--text);
+  font-family: 'Crimson Pro', Georgia, serif;
+  font-size: 15px;
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+.csel-trigger:focus,
+.csel-wrap.csel-open .csel-trigger {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(129, 1, 2, 0.08);
+}
+.csel-label {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.csel-arrow {
+  width: 11px;
+  height: 8px;
+  flex-shrink: 0;
+  color: var(--text-muted);
+  transition: transform 0.18s;
+}
+.csel-wrap.csel-open .csel-arrow {
+  transform: rotate(180deg);
+}
+.csel-panel {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 120;
+  background: var(--white);
+  border: 1.5px solid var(--gold);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  max-height: 220px;
+  overflow-y: auto;
+  padding: 4px 0;
+}
+.csel-option {
+  padding: 9px 14px;
+  font-family: 'Crimson Pro', Georgia, serif;
+  font-size: 15px;
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.csel-option:hover {
+  background: rgba(212, 191, 130, 0.2);
+}
+.csel-option.csel-selected {
+  background: rgba(129, 1, 2, 0.07);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* Título e autor na célula */
+.livro-titulo-cell {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.3;
+}
+.livro-autor-cell {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 400;
+  margin-top: 2px;
+  display: inline-block;
+}
+/* Chip genérico (16/07/2026) — usado hoje só para Categoria na tabela de
+   Livros ("em vez de apenas texto, um chip discreto melhora a leitura"). */
+.chip {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+}
+.chip-categoria {
+  background: rgba(3, 70, 1, 0.08);
+  color: var(--secondary);
+}
+/* Editora pesa menos na hierarquia visual da linha (16/07/2026: "prioridade
+   deveria ser título, autor, disponibilidade") — fonte menor e mais clara. */
+.livro-editora-cell {
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+
+/* Linha clicável */
+.livro-row,
+.clickable-row {
+  cursor: pointer;
+}
+.livro-row:hover td,
+.clickable-row:hover td {
+  background: rgba(129, 1, 2, 0.025);
+}
+
+/* Estado vazio livros */
+.livros-empty-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 52px 24px;
+}
+.livros-empty-inner svg {
+  width: 44px;
+  height: 44px;
+  color: rgba(212, 191, 130, 0.8);
+}
+.livros-empty-inner p {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.livros-empty-inner small {
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* Menu item danger */
+.menu-item-danger {
+  color: var(--primary) !important;
+}
+.menu-item-danger:hover {
+  background: rgba(129, 1, 2, 0.08) !important;
+}
+
+/* Modal detalhes livro */
+.detalhe-cabecalho {
+  margin-bottom: 20px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(212, 191, 130, 0.3);
+}
+.detalhe-titulo-livro {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 6px;
+  font-family: 'Playfair Display', 'Crimson Pro', serif;
+  line-height: 1.3;
+}
+/* Versão clicável de .detalhe-titulo-livro (17/07/2026) — usada no
+   cabeçalho do Detalhe do Exemplar, onde o título do livro é um botão que
+   volta para o Detalhe do Livro. Não reaproveita .btn-link (pequeno,
+   Inter, pensado para links inline em tabelas) para não perder o peso
+   visual de título pedido no feedback de design. */
+.detalhe-titulo-livro-link {
+  display: block;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0 0 6px;
+  cursor: pointer;
+  text-align: left;
+  font-size: 20px;
+  font-weight: 700;
+  font-family: 'Playfair Display', 'Crimson Pro', serif;
+  line-height: 1.3;
+  color: var(--text);
+}
+.detalhe-titulo-livro-link:hover {
+  color: var(--primary);
+  text-decoration: underline;
+}
+.detalhe-autores-livro {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin: 0;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.detalhe-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px 24px;
+}
+.detalhe-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.detalhe-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.9px;
+  color: var(--text-muted);
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.detalhe-valor {
+  font-size: 15px;
+  color: var(--text);
+  font-weight: 500;
+}
+/* Exemplar clicável no Detalhe do Empréstimo (19/07/2026, feedback de
+   design): .btn-link sozinho é pensado pra texto pequeno em tabelas — aqui
+   ele reaproveita a cor/cursor/sublinhado, mas mantém o tamanho/peso do
+   resto do detalhe-grid pra não destoar dos campos ao lado. */
+.detalhe-valor.btn-link {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* Modal de Detalhes da Auditoria — linhas "Campo alterado / Valor
+   anterior / Novo valor" (usuario.atualizar, exemplar.status,
+   reserva.status: ações que capturam o "antes" — ver Edge Function). */
+.auditoria-alteracoes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.auditoria-alteracao-item {
+  display: grid;
+  grid-template-columns: 100px 1fr auto 1fr;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: rgba(212, 191, 130, 0.16);
+  border-radius: 8px;
+}
+.auditoria-alteracao-campo {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: var(--text-muted);
+}
+.auditoria-alteracao-de {
+  font-size: 14px;
+  color: var(--text-muted);
+  text-decoration: line-through;
+  text-decoration-color: rgba(129, 1, 2, 0.35);
+  overflow-wrap: anywhere;
+}
+.auditoria-alteracao-para {
+  font-size: 14px;
+  color: var(--text);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.auditoria-alteracao-seta {
+  width: 16px;
+  height: 16px;
+  color: var(--secondary);
+  flex-shrink: 0;
+}
+@media (max-width: 600px) {
+  .auditoria-alteracao-item {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+  .auditoria-alteracao-seta {
+    display: none;
+  }
+}
+
+/* Modal confirmação compacto */
+.modal-confirm {
+  max-width: 440px !important;
+}
+.modal-confirm h3 {
+  color: var(--primary);
+}
+
+/* ===== BOTÃO OUTLINE (ações secundárias) ===== */
+.btn-outline {
+  background: transparent;
+  color: var(--secondary);
+  border: 2px solid var(--secondary);
+}
+.btn-outline:hover:not(:disabled) {
+  background: rgba(3, 70, 1, 0.07);
+}
+/* ===== BOTÃO GHOST (ações terciárias — 16/07/2026) =====
+   Sem borda, texto neutro: um degrau abaixo do outline (secundário) na
+   hierarquia visual, mas ainda reconhecível como botão clicável. */
+.btn-ghost {
+  background: transparent;
+  color: var(--text-muted);
+  border: 2px solid transparent;
+}
+.btn-ghost:hover:not(:disabled) {
+  background: rgba(90, 58, 48, 0.07);
+  color: var(--text);
+}
+
+/* ===== CENTRAL DO LEITOR ===== */
+.modal-box-leitor {
+  max-width: 720px !important;
+}
+
+.leitor-perfil-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 18px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(212, 191, 130, 0.3);
+}
+.leitor-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary);
+  color: var(--bg);
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 24px;
+  font-weight: 700;
+}
+.leitor-perfil-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.leitor-perfil-nome {
+  font-family: 'Playfair Display', 'Crimson Pro', serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+  line-height: 1.3;
+}
+.leitor-perfil-desde {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.leitor-info-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 22px;
+}
+.leitor-info-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+.leitor-info-icone {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: var(--primary);
+}
+.leitor-info-card div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.leitor-info-label {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-muted);
+}
+.leitor-info-valor {
+  font-size: 14px;
+  color: var(--text);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.leitor-resumo-rapido {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 26px;
+}
+.leitor-resumo-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  text-align: center;
+  background: rgba(212, 191, 130, 0.16);
+  border: 1.5px solid var(--gold);
+  border-radius: 12px;
+  padding: 14px 8px;
+}
+.leitor-resumo-valor {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 26px;
+  font-weight: 900;
+  color: var(--primary);
+  line-height: 1;
+}
+.leitor-resumo-label {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+}
+
+.leitor-timeline-bloco {
+  margin-bottom: 6px;
+}
+.leitor-timeline-vazia {
+  font-size: 14px;
+  color: var(--text-muted);
+  padding: 18px 4px;
+  text-align: center;
+}
+/* Botão "Ver histórico completo" (16/07/2026) — some quando a timeline não
+   está truncada; some/aparece via JS conforme renderLeitorTimeline. */
+.leitor-timeline-expandir {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px;
+  background: transparent;
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  color: var(--primary);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+.leitor-timeline-expandir:hover {
+  background: rgba(129, 1, 2, 0.05);
+  border-color: var(--primary);
+}
+.leitor-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-height: 340px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.leitor-timeline-grupo-data {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  /* Já foi position: sticky (cabeçalho de data fixo ao rolar a timeline).
+     Confirmado como bug: dentro do modal (que também rola), o rótulo da
+     data ficava sobreposto ao evento ao expandir/rolar. Fluxo normal
+     resolve, sem sobreposição. */
+  background: var(--white);
+  padding: 2px 0;
+}
+.leitor-timeline-eventos {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+  padding-left: 4px;
+  border-left: 2px solid rgba(212, 191, 130, 0.4);
+}
+.leitor-evento {
+  margin-left: -1px;
+  padding-left: 16px;
+  position: relative;
+}
+.leitor-evento::before {
+  content: '';
+  position: absolute;
+  left: -6px;
+  top: 15px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--gold);
+  border: 2px solid var(--white);
+}
+/* Divisor horizontal entre eventos (16/07/2026) — pedido de design de uma
+   "timeline de verdade", com mais respiro entre um evento e o próximo, além
+   da linha vertical que já conecta os pontos. */
+.leitor-evento + .leitor-evento {
+  border-top: 1px dashed rgba(212, 191, 130, 0.35);
+}
+.leitor-evento-resumo {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 10px;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+.leitor-evento-resumo:hover {
+  background: rgba(212, 191, 130, 0.14);
+}
+.leitor-evento-icone {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(129, 1, 2, 0.08);
+  color: var(--primary);
+}
+.leitor-evento-icone svg {
+  width: 15px;
+  height: 15px;
+}
+.leitor-evento-icone--devolucao,
+.leitor-evento-icone--reserva_atendida {
+  background: rgba(3, 70, 1, 0.1);
+  color: var(--secondary);
+}
+.leitor-evento-icone--multa,
+.leitor-evento-icone--multa_paga {
+  background: rgba(212, 191, 130, 0.28);
+  color: var(--gold-dark);
+}
+.leitor-evento-icone--reserva_cancelada {
+  background: rgba(129, 1, 2, 0.08);
+  color: var(--primary);
+}
+.leitor-evento-textos {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.leitor-evento-titulo {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text);
+}
+/* Sem truncamento (16/07/2026) — o resumo passou a incluir o destaque mais
+   relevante de cada evento (exemplar, dias de atraso, multa...) e pode
+   ocupar mais de uma linha; melhor deixar quebrar do que cortar com "...". */
+.leitor-evento-subtitulo {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  color: var(--text-muted);
+  white-space: normal;
+}
+.leitor-evento-chevron {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  margin-top: 7px;
+  color: var(--text-muted);
+  transition: transform 0.2s;
+}
+.leitor-evento.expandido .leitor-evento-chevron {
+  transform: rotate(180deg);
+}
+.leitor-evento-detalhe {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  padding: 0 10px;
+  background: var(--surface);
+  border-radius: 8px;
+  transition:
+    max-height 0.25s ease,
+    opacity 0.2s ease,
+    padding 0.25s ease;
+}
+.leitor-evento.expandido .leitor-evento-detalhe {
+  max-height: 320px;
+  opacity: 1;
+  padding: 10px 12px;
+  margin-top: 2px;
+}
+.leitor-evento-detalhe-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12.5px;
+  padding: 3px 0;
+  border-bottom: 1px dashed rgba(212, 191, 130, 0.4);
+}
+.leitor-evento-detalhe-item:last-child {
+  border-bottom: none;
+}
+/* Divisor antes do rodapé comum Responsável/Horário (19/07/2026, "eu
+   definiria um padrão... Detalhes / ──────── / Responsável / Data / Hora")
+   — separa visualmente os campos específicos do evento do rodapé de
+   metadados, aplicado ao primeiro item marcado meta:true (ver
+   linhasDetalheHTML). Borda sólida em vez da tracejada padrão entre
+   campos, para marcar a fronteira com mais peso. */
+.leitor-evento-detalhe-item--divisor {
+  border-top: 1.5px solid var(--border);
+  margin-top: 4px;
+  padding-top: 9px;
+}
+.leitor-evento-detalhe-item span {
+  color: var(--text-muted);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px;
+}
+.leitor-evento-detalhe-item strong {
+  color: var(--text);
+  font-weight: 600;
+  text-align: right;
+}
+
+.leitor-detalhe-acoes {
+  flex-wrap: wrap;
+}
+
+/* Responsivo — Central do Leitor */
+@media (max-width: 900px) {
+  .leitor-info-cards {
+    grid-template-columns: 1fr;
+  }
+  .leitor-resumo-rapido {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .leitor-resumo-valor {
+    font-size: 21px;
+  }
+  .leitor-perfil-header {
+    flex-wrap: wrap;
+  }
+  .leitor-detalhe-acoes {
+    flex-direction: column-reverse;
+  }
+  .leitor-detalhe-acoes .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+@media (max-width: 400px) {
+  .leitor-resumo-rapido {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===== Campo "Leitor" travado (pré-selecionado a partir da Central do Leitor) ===== */
+.leitor-fixo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 13px;
+  border: 1.5px solid var(--secondary);
+  border-radius: 8px;
+  background: rgba(3, 70, 1, 0.06);
+}
+.leitor-fixo-nome {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+.leitor-fixo-nome::after {
+  content: ' \2713';
+  color: var(--secondary);
+  font-weight: 700;
+}
+.leitor-fixo-alterar {
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  padding: 3px 4px;
+  cursor: pointer;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--secondary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.leitor-fixo-alterar:hover {
+  color: var(--secondary-dark);
+}
+
+/* ===== EMPRÉSTIMOS — redesenho de 14/07/2026 (modal, cascata, badges) ===== */
+/* Célula "Livro / Exemplar" da tabela: código do exemplar em destaque
+   (é o que o bibliotecário usa para localizar o livro fisicamente),
+   título do livro como legenda abaixo. */
+/* Peso visual invertido em 19/07/2026 (sétima rodada de feedback — "o
+   bibliotecário normalmente pensa primeiro no livro; o código do exemplar é
+   secundário"): livro-titulo virou a linha em destaque (antes era o
+   exemplar-codigo) e exemplar-codigo virou a linha secundária/menor — só as
+   regras trocaram de lugar, a ordem no HTML (js/ui.js, renderEmprestimos)
+   já foi invertida junto (Livro primeiro, Exemplar embaixo). */
+.emprestimo-livro-titulo {
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.2px;
+}
+.emprestimo-exemplar-codigo {
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+
+/* Legenda de dias restantes/em atraso, sob o badge de situação */
+.dias-info {
+  display: inline-block;
+  margin-top: 3px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11.5px;
+  color: var(--text-muted);
+  /* line-height (19/07/2026, sexta rodada de feedback): detalheExemplarColuna
+     passou a usar <br> para Emprestado/Atrasado/Baixado (duas linhas em vez
+     de "•" numa linha só) — sem isso as linhas ficavam coladas. */
+  line-height: 1.45;
+}
+
+/* Painel "Resumo do Livro" no modal Novo Empréstimo (disponíveis/emprestados/reservas) */
+.emprestimo-resumo-livro {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  padding: 10px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.emprestimo-resumo-item {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.emprestimo-resumo-item strong {
+  color: var(--text);
+  font-weight: 700;
+}
+.emprestimo-resumo-carregando {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-family: 'Inter', system-ui, sans-serif;
+}
+/* Força quebra de linha dentro do painel flex (18/07/2026, feedback de
+   design) — usado pela previsão de devolução e pela "Fila atual" do
+   formulário de Nova Reserva, que precisam ocupar a largura toda em vez de
+   entrar na mesma linha dos contadores de disponibilidade. */
+.emprestimo-resumo-linha-cheia {
+  flex-basis: 100%;
+}
+/* Lista numerada da fila atual (18/07/2026, "minha maior sugestão" da
+   rodada de feedback sobre Reservas) — usa a numeração nativa do <ol> em
+   vez de recriar "1. Nome" manualmente. */
+.reserva-fila-lista {
+  margin: 4px 0 0;
+  padding-left: 18px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12.5px;
+  color: var(--text);
+}
+.reserva-fila-lista li {
+  margin-bottom: 2px;
+}
+
+/* Timeline simplificada (sem expandir/recolher) reaproveitada da Central do
+   Leitor para o painel de Detalhes do Empréstimo — poucos eventos, então o
+   resumo já mostra tudo que interessa. */
+.leitor-evento--simples .leitor-evento-resumo {
+  cursor: default;
+}
+.leitor-evento--simples .leitor-evento-resumo:hover {
+  background: transparent;
+}
+
+/* ===== LIVROS — divisor no menu de ações + "Perfil do Livro" (14/07/2026) ===== */
+.action-menu-divider {
+  height: 1px;
+  margin: 4px 0;
+  background: rgba(212, 191, 130, 0.45);
+}
+
+.livro-detalhe-cabecalho {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+.livro-detalhe-titulo-bloco {
+  flex: 1;
+  min-width: 0;
+}
+.livro-categoria-linha {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  margin: 4px 0 0;
+}
+.livro-disponibilidade-badge {
+  flex-shrink: 0;
+}
+/* Status de disponibilidade do cabeçalho do Detalhe do Livro (19/07/2026,
+   quinta rodada de feedback — substitui o antigo "pill" com rótulo +
+   fração + status em 3 linhas, que repetia a mesma contagem de duas
+   formas). Agora é só a palavra de status (cor sólida, a informação que se
+   lê em menos de 2 segundos) mais uma frase natural com a contagem já
+   embutida, sem repetir o número separado. */
+.livro-disponibilidade-status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  text-align: right;
+}
+.livro-disponibilidade-status-texto {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.livro-disponibilidade-status-detalhe {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+.livro-disponibilidade-status--success {
+  background: var(--secondary);
+  color: var(--bg);
+}
+.livro-disponibilidade-status--danger {
+  background: var(--primary);
+  color: var(--bg);
+}
+.livro-disponibilidade-status--warning {
+  background: var(--gold);
+  color: var(--text);
+}
+.livro-disponibilidade-status--neutro {
+  background: rgba(90, 58, 48, 0.1);
+  color: var(--text-muted);
+}
+.livro-detalhe-subtitulo {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--secondary);
+  margin: 22px 0 12px;
+}
+.livro-detalhe-subtitulo:first-of-type {
+  margin-top: 4px;
+}
+/* Modificador para subtítulos que não devem herdar a margem superior padrão
+   — usado dentro do grid Exemplares/Reservas lado a lado (16/07/2026), onde
+   o espaçamento já vem do bloco anterior. */
+.livro-detalhe-subtitulo--tight {
+  margin-top: 4px;
+}
+/* Títulos das 3 grandes seções do painel (Informações Bibliográficas /
+   Situação Atual / Histórico de Circulação — reorganização de 16/07/2026,
+   feedback de design: "a tela mistura três níveis diferentes de
+   informação... eu organizaria assim"). Uma hierarquia acima de
+   .livro-detalhe-subtitulo, com um divisor para separar visualmente cada
+   bloco em vez de competir tudo pela mesma atenção. */
+.livro-secao-titulo {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--primary);
+  margin: 28px 0 0;
+  padding-top: 20px;
+  border-top: 1.5px solid var(--border);
+}
+.livro-secao-titulo:first-of-type {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+.livro-estatisticas {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+/* Resumo dividido em "Acervo" (patrimônio) + "Circulação" (movimentação)
+   (19/07/2026, quinta rodada de feedback — desfaz a unificação em bloco
+   único de 16/07/2026: "aqui há mistura de conceitos... assim você separa
+   patrimônio de movimentação"). 3 chips por bloco, não 4/7. */
+.livro-estatisticas--3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+/* Grid lado a lado de Exemplares e Reservas (16/07/2026). Em telas estreitas
+   as colunas empilham — ver media query mais abaixo. */
+.livro-exemplares-reservas-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+  margin-top: 22px;
+}
+.livro-circulacao-info {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+.livro-circulacao-info strong {
+  color: var(--text);
+  font-weight: 700;
+}
+
+/* Cards de exemplar (16/07/2026) — substitui a lista de linhas no painel
+   read-only de Detalhes do Livro (Gerenciar Exemplares continua usando
+   .livro-exemplar-item, que precisa do <select> de status inline). Cada
+   card é clicável e abre o histórico daquele exemplar específico
+   (abrirDetalheExemplar) — "integra as telas", como pedido no feedback. */
+.livro-exemplares-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px;
+}
+.exemplar-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+}
+.exemplar-card:hover {
+  border-color: var(--gold);
+  box-shadow: 0 2px 8px rgba(129, 1, 2, 0.08);
+}
+/* Código patrimonial como "identificador", não título (17/07/2026, feedback
+   de design: "não deveria competir com o título do livro pela atenção do
+   usuário; fonte monoespaçada ajuda a comunicar que é um código"). Aplicada
+   junto das classes específicas de cada lugar onde o código aparece (tabela
+   de Exemplares, cards, itens de lista, cabeçalho do Detalhe do Exemplar). */
+.codigo-patrimonial {
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-weight: 600;
+  font-size: 12.5px;
+  letter-spacing: 0.3px;
+  color: var(--text-muted);
+  background: rgba(90, 58, 48, 0.08);
+  padding: 2px 8px;
+  border-radius: 5px;
+  display: inline-block;
+}
+.exemplar-card-info {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+.exemplar-card-acao {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--primary);
+  margin-top: 2px;
+}
+
+/* Reforma da tela de Exemplares (16/07/2026): código patrimonial vira o
+   identificador visual principal (o UUID sai da interface). Tratamento
+   monoespaçado/discreto vem de .codigo-patrimonial (17/07/2026) — esta
+   classe só existe para eventuais ajustes específicos da tabela. */
+.exemplar-codigo-destaque {
+  letter-spacing: 0.2px;
+}
+/* Indicador discreto de contagem (18/07/2026, feedback de design —
+   substitui .exemplar-situacao-info, removida por ficar sem uso: a coluna
+   Situação da tabela de Exemplares voltou a ser só o badge de status. Ver
+   Achado 33). Reaproveitado em 19/07/2026 pela coluna Reservas da tabela
+   de Livros (ver reservasColunaHTML). Só o número, com tooltip explicando
+   o que ele significa. Usa a paleta dourada já existente, sem cor nova, e
+   sem emoji (mesma decisão de sempre). */
+.badge-reserva-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  margin-left: 6px;
+  border-radius: 999px;
+  background: rgba(212, 191, 130, 0.35);
+  color: var(--gold-dark);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 10.5px;
+  font-weight: 800;
+  vertical-align: middle;
+}
+/* Nota no modal "Novo Exemplar" explicando que o código é gerado pelo banco
+   — substitui o antigo campo de texto livre. */
+.exemplar-codigo-auto {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  font-style: italic;
+  margin: 4px 0 0;
+}
+
+.livro-exemplares-lista,
+.livro-reservas-lista {
+  display: flex;
+  flex-direction: column;
+  max-height: 220px;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.livro-exemplar-item,
+.livro-reserva-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(212, 191, 130, 0.3);
+  flex-wrap: wrap;
+}
+.livro-exemplar-item:last-child,
+.livro-reserva-item:last-child {
+  border-bottom: none;
+}
+.livro-exemplar-codigo {
+  min-width: 72px;
+}
+.livro-exemplar-info {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  margin-left: auto;
+}
+.btn-link {
+  border: none;
+  background: transparent;
+  padding: 0;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--primary);
+  cursor: pointer;
+  text-decoration: none;
+}
+.btn-link:hover {
+  text-decoration: underline;
+}
+.livro-reserva-nome {
+  font-weight: 600;
+  color: var(--text);
+}
+.livro-reserva-fila {
+  margin-left: auto;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--secondary);
+}
+/* Data da reserva (19/07/2026, quinta rodada de feedback) — linha própria,
+   abaixo de nome/posição ("assim o bibliotecário entende há quanto tempo a
+   pessoa está esperando"). flex-basis:100% força a quebra de linha dentro
+   do mesmo item flex-wrap, sem precisar reestruturar o markup em coluna. */
+.livro-reserva-data {
+  flex-basis: 100%;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+/* Destaque do leitor da reserva atual dentro da "Fila completa" do modal de
+   Detalhes da Reserva (18/07/2026, feedback de design) — mesma lista de
+   todo mundo na fila, só com a própria linha realçada para achar rápido. */
+.livro-reserva-item-atual {
+  background: rgba(212, 191, 130, 0.18);
+  border-radius: 6px;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+.livro-lista-vazia {
+  padding: 18px 14px;
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.livro-detalhe-acoes {
+  flex-wrap: wrap;
+}
+
+.livro-gerenciar-subtitulo {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: -8px 0 16px;
+}
+
+/* Resumo do livro no topo do modal Controle de Exemplares (19/07/2026,
+   oitava rodada de feedback — "assim o bibliotecário entende rapidamente a
+   situação do livro antes de tomar qualquer ação"). Reaproveita os mesmos
+   chips .leitor-resumo-* já usados na Central do Leitor, em vez de criar um
+   componente de estatística paralelo — só o container vira flex-wrap porque
+   o número de chips varia (1 exemplar sem baixados/emprestados vs. um livro
+   com todos os status presentes). */
+.livro-gerenciar-resumo {
+  margin: -4px 0 14px;
+}
+.livro-gerenciar-titulo {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 2px;
+}
+.livro-gerenciar-autor {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0 0 12px;
+}
+.livro-gerenciar-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.livro-gerenciar-stats .leitor-resumo-chip {
+  flex: 1 1 90px;
+  padding: 10px 6px;
+}
+.livro-gerenciar-stats .leitor-resumo-valor {
+  font-size: 20px;
+}
+/* Aviso de reservas ativas (19/07/2026): "hoje fica solto — eu colocaria um
+   pequeno aviso". Paleta dourada de alerta já usada em outros pontos do
+   projeto (não é um erro/problema, é um "preste atenção"), sem introduzir
+   uma cor nova. */
+.livro-gerenciar-reservas-aviso {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--gold-dark);
+  background: rgba(212, 191, 130, 0.18);
+  border: 1px solid var(--gold);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 14px;
+}
+
+/* Lista de exemplares em cards, agrupados por status (19/07/2026, oitava
+   rodada de feedback — substitui a lista de linhas simples). Reaproveita a
+   caixa/scroll de .livro-exemplares-lista; só a altura cresce um pouco, já
+   que os cards ocupam mais espaço vertical que uma linha de texto. */
+.livro-exemplares-lista--cards {
+  max-height: 340px;
+  padding: 10px;
+  gap: 14px;
+}
+.exemplar-gerenciar-grupo:not(:last-child) {
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(212, 191, 130, 0.3);
+}
+.exemplar-gerenciar-grupo-titulo {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-muted);
+  margin: 0 0 8px;
+}
+.exemplar-gerenciar-grupo-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+}
+.exemplar-gerenciar-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.exemplar-gerenciar-card-topo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.exemplar-gerenciar-card-topo .action-menu-wrap {
+  margin-left: auto;
+}
+/* Info contextual do card (motivo/data/leitor/previsão) reaproveita
+   .detalhe-item/.detalhe-label/.detalhe-valor (mesmo par rótulo/valor do
+   bloco Resumo dos modais de Empréstimo/Exemplar) — aqui só em escala menor
+   e empilhados (o card é bem mais estreito que um grid de detalhe de modal). */
+.exemplar-gerenciar-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.exemplar-gerenciar-card-info .detalhe-label {
+  font-size: 9.5px;
+}
+.exemplar-gerenciar-card-info .detalhe-valor {
+  font-size: 13px;
+}
+.exemplar-gerenciar-disponivel {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.livro-gerenciar-secao-titulo {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-muted);
+  margin: 18px 0 8px;
+}
+.livro-add-exemplar-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  margin-top: 0;
+}
+.livro-add-exemplar-row .form-group {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+@media (max-width: 700px) {
+  .livro-estatisticas {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .livro-exemplares-reservas-grid {
+    grid-template-columns: 1fr;
+  }
+  .livro-detalhe-cabecalho {
+    flex-direction: column;
+  }
+  .livro-detalhe-acoes {
+    flex-direction: column-reverse;
+  }
+  .livro-detalhe-acoes .btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .livro-add-exemplar-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .livro-exemplar-info,
+  .livro-exemplar-acoes {
+    margin-left: 0;
+  }
+}
+
+/* Destaque do trecho encontrado na busca (Requisito 8, opcional — Achado 25:
+   mecanismo de busca inteligente). Cores de identidade do projeto, não o
+   amarelo padrão do navegador. */
+mark {
+  background: var(--gold);
+  color: var(--text);
+  border-radius: 2px;
+  padding: 0 1px;
+}
