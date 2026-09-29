@@ -29,6 +29,18 @@ A regra principal do projeto: **“primeiro um sistema de gestão, depois uma bi
 - **Painel:** indicadores e relatório de empréstimos em atraso.
 - **Autenticação** e **trilha de auditoria** de todas as operações de escrita.
 
+## Telas
+
+| Login                                        | Painel geral                                                           |
+| -------------------------------------------- | ---------------------------------------------------------------------- |
+| ![Tela de login](docs/screenshots/login.png) | ![Painel geral com indicadores do acervo](docs/screenshots/painel.png) |
+
+| Empréstimos                                                                      | Novo empréstimo                                                        |
+| -------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| ![Lista de empréstimos com filtros e situação](docs/screenshots/emprestimos.png) | ![Formulário de novo empréstimo](docs/screenshots/novo-emprestimo.png) |
+
+> Dados fictícios, usados apenas para demonstração.
+
 ## Arquitetura
 
 Arquitetura em camadas — o navegador **nunca** acessa o banco diretamente:
