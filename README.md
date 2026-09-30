@@ -106,10 +106,13 @@ Banco de dados (PostgreSQL no Supabase)      ← RLS, views, funções, triggers
 
 ## Segurança
 
-- **RLS** ativo em todas as tabelas, liberado apenas para o papel `authenticated`; escrita exige
-  sessão válida (`auth.uid()`).
+- **Sem acesso direto ao banco:** os papéis `anon` e `authenticated` não têm privilégio algum
+  nas tabelas/views (`/rest/v1` não devolve dados). Tudo passa pela Edge Function; o RLS fica
+  ligado como segunda camada.
+- **Cadastro público desligado:** contas da equipe são criadas pelo admin. Uma conta sem perfil
+  em `app_perfil` é recusada pela API (403) — não existe mais auto-cadastro como `consulta`.
 - **Chave de serviço** vive apenas no servidor (Edge Function), nunca no navegador. A chave
-  `anon` no front é pública por design e protegida pelo RLS.
+  `anon` no front é pública por design.
 - **Auditoria:** toda operação de escrita é registrada em `log_auditoria`.
 
 > Para produção, ative a _proteção contra senha vazada_ no Supabase e use senhas fortes.

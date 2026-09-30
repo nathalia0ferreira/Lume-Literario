@@ -71,8 +71,17 @@ async function iniciarApp() {
 
   // RBAC: descobre o papel e ajusta a UI
   try {
-    const { data } = await PerfilRepo.meu();
-    if (data?.papel) papelAtual = data.papel;
+    const res = await PerfilRepo.meu();
+    if (res?.data?.papel) papelAtual = res.data.papel;
+    // Conta autenticada, mas sem perfil em app_perfil: a API nega tudo (403).
+    // Encerra a sessão e volta ao login com o aviso, em vez de abrir a UI vazia.
+    if (res?.semPerfil) {
+      await AuthService.sair();
+      document.getElementById('appRoot').style.display = 'none';
+      document.getElementById('loginOverlay').classList.add('active');
+      showAlert('loginAlert', res.message, 'error');
+      return;
+    }
   } catch {}
   document.body.classList.toggle('somente-leitura', papelAtual === 'consulta');
 

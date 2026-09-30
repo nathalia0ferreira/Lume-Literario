@@ -46,7 +46,8 @@ on conflict (email) do update set papel = 'admin';
 
 ```sql
 update app_perfil set papel = 'bibliotecario' where email = 'fulano@dominio';
--- novos usuários entram como 'leitor' por padrão (menor privilégio)
+-- contas SEM linha em app_perfil não acessam nada (a API responde 403);
+-- todo membro da equipe precisa ter um perfil definido por um admin
 ```
 
 ---
