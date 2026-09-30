@@ -3,7 +3,7 @@
 
 # Lume Literário
 
-**Sistema de gestão de biblioteca** — software para administrar acervo, usuários, empréstimos, reservas e multas.
+**Sistema de gestão de biblioteca:** software para administrar acervo, usuários, empréstimos, reservas e multas.
 
 `PostgreSQL` · `Supabase` · `Edge Functions (Deno/TypeScript)` · `HTML/CSS/JS`
 </div>
@@ -14,9 +14,9 @@
 
 O **Lume Literário** é um sistema de gestão de bibliotecas construído sobre o Supabase
 (PostgreSQL). Ele centraliza o cadastro do acervo e dos usuários e automatiza o ciclo de
-empréstimos — incluindo reservas com fila, cálculo de multas por atraso e relatórios.
+empréstimos, incluindo reservas com fila, cálculo de multas por atraso e relatórios.
 
-A regra principal do projeto: **“primeiro um sistema de gestão, depois uma biblioteca”** — o foco
+A regra principal do projeto: **“primeiro um sistema de gestão, depois uma biblioteca”**, o foco
 é confiabilidade, organização e segurança dos dados.
 
 ## Funcionalidades
@@ -43,7 +43,7 @@ A regra principal do projeto: **“primeiro um sistema de gestão, depois uma bi
 
 ## Arquitetura
 
-Arquitetura em camadas — o navegador **nunca** acessa o banco diretamente:
+Arquitetura em camadas: o navegador **nunca** acessa o banco diretamente:
 
 ```
 Navegador (apresentação)
