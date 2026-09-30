@@ -115,9 +115,13 @@ const ACOES_ADMIN = new Set(['perfisListar', 'perfilDefinir', 'perfilRemover', '
 // (mesmo espírito de ACOES_ADMIN, mas sem restringir a admin apenas).
 const ACOES_STAFF_APENAS = new Set(['auditoriaPagina', 'auditoriaUsuarios']);
 
-// Resolve o papel do usuário logado; vincula o bootstrap por e-mail no 1º login
-// e auto-provisiona como 'consulta' (menor privilégio) quem ainda não tem perfil.
-async function papelDoUsuario(sb: any, user: any): Promise<string> {
+// Resolve o papel do usuário logado; vincula o bootstrap por e-mail no 1º login.
+// Quem não tem perfil cadastrado por um admin em app_perfil NÃO recebe papel
+// nenhum (retorna null → 403). Antes, qualquer conta nova era auto-provisionada
+// como 'consulta' — com o cadastro público do Supabase Auth aberto, isso dava
+// leitura de todos os dados (CPF etc.) a qualquer pessoa, e remover um perfil
+// não tirava o acesso (a pessoa era recriada como 'consulta' na chamada seguinte).
+async function papelDoUsuario(sb: any, user: any): Promise<string | null> {
   const porId = await sb.from('app_perfil').select('papel').eq('user_id', user.id).maybeSingle();
   if (porId.data?.papel) return porId.data.papel;
   if (user.email) {
@@ -132,8 +136,7 @@ async function papelDoUsuario(sb: any, user: any): Promise<string> {
       return porEmail.data.papel;
     }
   }
-  await sb.from('app_perfil').insert({ user_id: user.id, email: user.email, papel: 'consulta' });
-  return 'consulta';
+  return null;
 }
 
 // Cópia da Edge Function (Deno; import relativo para fora de
@@ -177,6 +180,11 @@ const handler = async (req: Request): Promise<Response> => {
 
   // ---- RBAC: papel do usuário (admin / bibliotecario / consulta) ----
   const papel = await papelDoUsuario(sb, user);
+  if (!papel)
+    return reply(
+      { ok: false, semPerfil: true, message: 'Sua conta não tem acesso ao sistema. Contate o administrador.' },
+      403,
+    );
 
   // ---- Auditoria: registra operações de escrita ----
   const logar = async (acao: string, entidade: string, registro_id: any = null, detalhe: any = null) => {

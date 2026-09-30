@@ -5,3 +5,10 @@ project_id = "lume-literario"
 
 [functions.api]
 verify_jwt = false
+
+# Cadastro público desligado: contas da equipe são criadas pelo admin
+# (Authentication → Users ou convite). Este arquivo vale para o ambiente
+# local da CLI; no projeto hospedado, desligue também no painel:
+# Authentication → Sign In / Providers → "Allow new users to sign up".
+[auth]
+enable_signup = false

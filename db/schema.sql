@@ -712,10 +712,11 @@ SELECT
   lower(coalesce(l.usuario_email,'')||' '||coalesce(l.acao,'')||' '||coalesce(l.entidade,'')||' '||coalesce(l.registro_id,'')) AS busca
 FROM log_auditoria l;
 
+-- Só a Edge Function (service_role) lê as views — ver seção 7b.
 GRANT SELECT ON vw_usuarios_lista, vw_livros_lista, vw_exemplares_lista,
                 vw_emprestimos_lista, vw_reservas_lista, vw_multas_lista,
                 vw_log_auditoria_lista
-TO authenticated, service_role;
+TO service_role;
 
 -- ------------------------------------------------------------
 -- 7. RLS — Row Level Security (leitura: qualquer autenticado;
@@ -745,6 +746,37 @@ CREATE POLICY log_erro_sel_auth ON public.log_erro FOR SELECT TO authenticated U
 
 ALTER TABLE public.app_perfil ENABLE ROW LEVEL SECURITY;
 CREATE POLICY app_perfil_sel_own ON public.app_perfil FOR SELECT TO authenticated USING (user_id = (select auth.uid()));
+
+-- ------------------------------------------------------------
+-- 7b. PRIVILÉGIOS — sem acesso direto via PostgREST (/rest/v1)
+--     (migration 20260930120000_revogar_acesso_direto_postgrest.sql).
+--     O front só fala com a Edge Function `api` (service_role); anon e
+--     authenticated não têm privilégio algum em tabelas/views/sequences.
+--     As policies de RLS acima ficam como segunda camada de defesa.
+-- ------------------------------------------------------------
+REVOKE ALL ON TABLE
+  public.autor, public.categoria, public.configuracao, public.editora,
+  public.emprestimo, public.exemplar, public.livro, public.livro_autor,
+  public.multa, public.reserva, public.usuario,
+  public.log_auditoria, public.log_erro, public.app_perfil
+FROM anon, authenticated;
+
+REVOKE ALL ON TABLE
+  public.vw_usuarios_lista, public.vw_livros_lista, public.vw_exemplares_lista,
+  public.vw_emprestimos_lista, public.vw_reservas_lista, public.vw_multas_lista,
+  public.vw_log_auditoria_lista,
+  public.vw_exemplares_disponiveis, public.vw_livros_mais_emprestados,
+  public.vw_emprestimos_em_atraso, public.vw_historico_emprestimos,
+  public.vw_acervo_completo, public.vw_reservas_ativas, public.vw_receita_multas_mensal
+FROM anon, authenticated;
+
+REVOKE ALL ON ALL SEQUENCES IN SCHEMA public FROM anon, authenticated;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE ALL ON TABLES FROM anon, authenticated;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE ALL ON SEQUENCES FROM anon, authenticated;
+
+GRANT ALL ON ALL TABLES IN SCHEMA public TO service_role;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO service_role;
 
 -- ------------------------------------------------------------
 -- 8. SEED
